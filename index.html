@@ -3,199 +3,201 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ROAMRIDER | Explore India</title>
+<title>IndicRide | Global Travel, Indian Soul</title>
 <!-- Supabase Client Library CDN -->
 <script src="https://jsdelivr.net"></script>
 <style>
 *{box-sizing:border-box}
-body{margin:0;font-family:Arial,sans-serif;background:#f5f7fb;color:#172033}
-header{background:#101b35;color:white;padding:20px}
+body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;background:#f8fafc;color:#0f172a}
+header{background:#0f172a;color:white;padding:20px;border-bottom:3px solid #f97316}
 nav{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
-.logo{font-size:24px;font-weight:900;color:#f7bd35}
-nav a{color:white;text-decoration:none;margin:5px}
-.hero{padding:45px 20px;text-align:center;background:#17294b;color:white}
-.hero h1{font-size:35px;margin:5px}
-.hero p{line-height:1.6}
+.logo{font-size:26px;font-weight:900;color:#f97316;letter-spacing:1px}
+.logo span{color:#ffffff}
+nav a{color:#94a3b8;text-decoration:none;margin:5px;font-weight:600;transition:0.3s}
+nav a:hover{color:#f97316}
+.hero{padding:60px 20px;text-align:center;background:linear-gradient(135deg, #0f172a 0%, #1e293b 100%);color:white}
+.hero h1{font-size:38px;margin:5px;font-weight:800;letter-spacing:-0.5px}
+.hero p{color:#94a3b8;line-height:1.6;font-size:18px}
+.btn-primary{background:#f97316;color:white;border:0;font-weight:bold;cursor:pointer;margin-top:14px;transition:0.3s;box-shadow:0 4px 14px rgba(249, 115, 22, 0.4)}
+.btn-primary:hover{background:#ea580c;transform:translateY(-1px)}
 main{max-width:850px;margin:auto;padding:18px}
-.card{background:white;border-radius:16px;padding:20px;margin:16px 0;box-shadow:0 5px 20px #15234412}
-label{display:block;font-weight:bold;margin:13px 0 6px}
-input,select,button{width:100%;padding:13px;border-radius:9px;border:1px solid #d5dbea;font-size:16px}
-button{background:#f7bd35;border:0;font-weight:bold;cursor:pointer;margin-top:14px}
-button:hover{background:#e9aa20}
-.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-.price{font-size:28px;font-weight:bold;color:#117a52;margin-top:10px}
-.small{font-size:13px;color:#647087;line-height:1.5;margin-top:8px}
-.status-badge{display:inline-block;padding:4px 8px;border-radius:4px;font-size:12px;font-weight:bold;background:#e2e8f0}
-.status-pending{background:#feebc8;color:#c05621}
-.status-confirmed{background:#c6f6d5;color:#22543d}
-footer{text-align:center;padding:25px;background:#101b35;color:white}
+.card{background:white;border-radius:20px;padding:25px;margin:20px 0;box-shadow:0 10px 30px rgba(15, 23, 42, 0.04);border:1px solid #e2e8f0}
+label{display:block;font-weight:700;margin:16px 0 6px;font-size:14px;text-transform:uppercase;color:#475569;letter-spacing:0.5px}
+input,select,button{width:100%;padding:14px;border-radius:12px;border:1px solid #cbd5e1;font-size:16px;background:#ffffff;color:#0f172a}
+input:focus,select:focus{outline:none;border-color:#f97316;box-shadow:0 0 0 3px rgba(249, 115, 22, 0.1)}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.price{font-size:36px;font-weight:800;color:#10b981;margin-top:10px;letter-spacing:-1px}
+.small{font-size:13px;color:#64748b;line-height:1.5;margin-top:8px}
+.status-badge{display:inline-block;padding:6px 12px;border-radius:8px;font-size:12px;font-weight:bold}
+.status-pending{background:#ffedd5;color:#ea580c}
+.status-confirmed{background:#d1fae5;color:#065f46}
+footer{text-align:center;padding:35px;background:#0f172a;color:white;margin-top:40px;border-top:1px solid #1e293b}
 .hidden{display:none !important}
-@media(max-width:520px){.grid{grid-template-columns:1fr}.hero h1{font-size:28px}}
+@media(max-width:520px){.grid{grid-template-columns:1fr}.hero h1{font-size:30px}}
 </style>
 </head>
 <body>
 
 <header>
 <nav>
-<div class="logo">🐅 ROAMRIDER</div>
+<div class="logo">🇮🇳 Indic<span>Ride</span></div>
 <div>
-<a href="#book">बुकिंग</a>
-<a href="#services">सेवाएँ</a>
-<a href="#orders">मेरी ट्रिप</a>
-<span id="userStatus" style="color:#f7bd35; margin-left:10px; font-weight:bold;"></span>
+<a href="#book">Book Ride</a>
+<a href="#services">Services</a>
+<a href="#orders">My Trips</a>
+<span id="userStatus" style="color:#f97316; margin-left:10px; font-weight:bold;"></span>
 </div>
 </nav>
 </header>
 
 <section class="hero">
-<h1 id="heroTitle">Explore India Your Way</h1>
-<p id="heroText">अपनी यात्रा चुनें। अपनी भाषा में घूमें।</p>
-<button onclick="document.getElementById('book').scrollIntoView({behavior:'smooth'})">
-अभी ट्रिप प्लान करें
+<h1 id="heroTitle">Next-Gen Mobility For India</h1>
+<p id="heroText">Explore locally, connect globally. Choose your way.</p>
+<button class="btn-primary" onclick="document.getElementById('book').scrollIntoView({behavior:'smooth'})" style="width:auto; padding:14px 28px;">
+Start Your Journey
 </button>
 </section>
 
 <main>
 <!-- भाषा चयन -->
 <section class="card">
-<label for="language">Language / भाषा चुनें</label>
+<label for="language">Global Settings / भाषा</label>
 <select id="language" onchange="changeLanguage()">
+<option value="en">English (Global)</option>
 <option value="hi">हिंदी (Hindi)</option>
-<option value="en">English</option>
 </select>
 </section>
 
 <!-- Supabase Auth (लॉग-इन / साइन-अप) सेक्शन -->
 <section class="card" id="authSection">
-<h2 id="authTitle">यात्री / ड्राइवर अकाउंट (लॉग-इन / साइन-अप)</h2>
-<p class="small">सुरक्षित बुकिंग और ड्राइवर पैनल इस्तेमाल करने के लिए लॉग-इन अनिवार्य है।</p>
+<h2 id="authTitle">Secure Gateway (Login / Signup)</h2>
+<p class="small">Access next-gen decentralized cloud booking system.</p>
 <div class="grid">
   <div>
-    <label for="authEmail">ईमेल आईडी / Email</label>
-    <input type="email" id="authEmail" placeholder="email@example.com">
+    <label for="authEmail">Email Address</label>
+    <input type="email" id="authEmail" placeholder="name@domain.com">
   </div>
   <div>
-    <label for="authPassword">पासवर्ड / Password</label>
+    <label for="authPassword">Password</label>
     <input type="password" id="authPassword" placeholder="******">
   </div>
 </div>
-<div class="grid">
-  <button type="button" onclick="handleSignUp()" style="background:#e2e8f0; color:#172033;">नया अकाउंट बनाएं (Sign Up)</button>
-  <button type="button" onclick="handleSignIn()">लॉग-इन करें (Sign In)</button>
+<div class="grid" style="margin-top:15px;">
+  <button type="button" onclick="handleSignUp()" style="background:#f1f5f9; color:#0f172a; border:1px solid #cbd5e1;">Create Account</button>
+  <button type="button" onclick="handleSignIn()" class="btn-primary" style="margin-top:0;">Secure Sign In</button>
 </div>
-<div id="authMessage" class="small" style="font-weight:bold; color:red;"></div>
+<div id="authMessage" class="small" style="font-weight:bold; color:#ef4444;"></div>
 </section>
 
 <!-- सेवाएँ -->
 <section class="card" id="services">
-<h2 id="serviceTitle">हमारी सेवाएँ</h2>
+<h2 id="serviceTitle">Premium Mobility Services</h2>
 <div class="grid">
-<div><h3>🚗 कार ट्रिप</h3><p>परिवार और दोस्तों के साथ सफर।</p></div>
-<div><h3>🏍️ बाइक ट्रिप</h3><p>स्थानीय राइडर के साथ घूमने का विकल्प।</p></div>
-<div><h3>🏛️ साइटसीइंग</h3><p>अपनी पसंद के पर्यटन स्थल चुनें।</p></div>
-<div><h3>💰 पारदर्शी किराया</h3><p>बुकिंग से पहले अनुमानित किराया देखें।</p></div>
+<div><h3 style="color:#f97316;">🚗 Auto Cruiser</h3><p>Premium cars for intercity and family travel.</p></div>
+<div><h3 style="color:#f97316;">🏍️ Moto Rapid</h3><p>Fast local bike transits with pro riders.</p></div>
+<div><h3 style="color:#f97316;">🏛️ Heritage Tours</h3><p>Curated smart sightseeing to historical spots.</p></div>
+<div><h3 style="color:#f97316;">💰 Smart Pricing</h3><p>Transparent real-time algorithmic fare mapping.</p></div>
 </div>
 </section>
 
-<!-- मुख्य बुकिंग फॉर्म (यात्री के लिए) -->
+<!-- मुख्य बुकिंग फॉर्म -->
 <section class="card" id="book">
-<h2 id="bookingTitle">अपनी ट्रिप प्लान करें (कस्टमर बुकिंग)</h2>
+<h2 id="bookingTitle">Ride Configurator (Customer)</h2>
 <form id="bookingForm" onsubmit="handleBookingSubmit(event)">
 
 <div class="grid">
   <div>
-    <label for="pickup">कहाँ से शुरू करना है? / Pickup</label>
-    <input id="pickup" required placeholder="जैसे: चित्रकूट रेलवे स्टेशन">
+    <label for="pickup">Origin / Pickup Point</label>
+    <input id="pickup" required placeholder="e.g. Chitrakoot Railway Station">
   </div>
   <div>
-    <label for="destination">कहाँ तक जाना है? / Destination</label>
-    <input id="destination" required placeholder="जैसे: रामघाट चित्रकूट">
+    <label for="destination">Terminal / Destination</label>
+    <input id="destination" required placeholder="e.g. Ramghat Chitrakoot">
   </div>
 </div>
 
 <div class="grid">
 <div>
-<label for="vehicle">सवारी / Vehicle</label>
+<label for="vehicle">Fleet Class</label>
 <select id="vehicle" onchange="resetFareView()">
-<option value="bike">🏍️ बाइक (Bike)</option>
-<option value="car">🚗 कार (Car)</option>
+<option value="bike">🏍️ Moto Rapid (Bike)</option>
+<option value="car">🚗 Auto Cruiser (Car)</option>
 </select>
 </div>
 <div>
-<label for="people">यात्री / People</label>
+<label for="people">Manifest / Passengers</label>
 <select id="people">
-<option value="1">1 व्यक्ति</option>
-<option value="2">2 व्यक्ति</option>
-<option value="3">3 व्यक्ति</option>
-<option value="4">4 व्यक्ति</option>
-<option value="5">5 व्यक्ति</option>
+<option value="1">1 Passenger</option>
+<option value="2">2 Passengers</option>
+<option value="3">3 Passengers</option>
+<option value="4">4 Passengers</option>
+<option value="5">5 Passengers</option>
 </select>
 </div>
 </div>
 
 <div class="grid">
   <div>
-    <label for="tripDate">यात्रा की तारीख / Date</label>
+    <label for="tripDate">Schedule Date</label>
     <input type="date" id="tripDate" required>
   </div>
   <div>
-    <label for="passengerName">यात्री का नाम / Name</label>
-    <input type="text" id="passengerName" required placeholder="नाम लिखें">
+    <label for="passengerName">Full Name</label>
+    <input type="text" id="passengerName" required placeholder="Enter pass name">
   </div>
 </div>
 
-<!-- ऑटोमैटिक दूरी और समय डिस्प्ले ग्रिड -->
-<div class="grid" style="margin-top: 15px; background: #eef2f7; padding: 12px; border-radius: 8px;">
+<!-- एडवांस्ड टेलीमेट्री डिस्प्ले ग्रिड -->
+<div class="grid" style="margin-top: 20px; background: #f1f5f9; padding: 16px; border-radius: 12px; border: 1px solid #e2e8f0;">
   <div>
-    <strong>🚗 रूट रोड दूरी:</strong> <span id="routeDistance">00</span> किमी
+    <strong style="color:#475569;">🚗 Telemetry Distance:</strong> <span id="routeDistance" style="font-weight:bold; color:#0f172a;">00</span> km
   </div>
   <div>
-    <strong>⏱️ अनुमानित समय:</strong> <span id="routeTime">00</span> मिनट
+    <strong>⏱️ Est. Transit Time:</strong> <span id="routeTime" style="font-weight:bold; color:#0f172a;">00</span> mins
   </div>
 </div>
 
-<button type="button" onclick="getRouteAndFare()" style="background:#17294b; color:white;">1. ऑटोमैटिक दूरी और किराया निकालें</button>
+<button type="button" onclick="getRouteAndFare()" style="background:#0f172a; color:white; margin-top:15px;">1. Calculate Algorithmic Fare</button>
 
 <div id="fareResult" aria-live="polite"></div>
 
-<button type="submit" id="submitBtn" style="background:#117a52; color:white; display:none; margin-top:20px;">2. बुकिंग रिक्वेस्ट सेव करें (Confirm Booking)</button>
-<p class="small">नोट: किराया वास्तविक रोड दूरी, न्यूनतम चार्ज, ड्राइवर कमाई और ₹15 प्लेटफॉर्म फीस को जोड़कर पारदर्शी रूप से बनाया गया है।</p>
+<button type="submit" id="submitBtn" class="btn-primary" style="display:none; margin-top:20px;">2. Dispatch Ride Request</button>
+<p class="small">Smart fare engine accounts for road distance, vehicle tier, rider compensation, and a minimal ₹15 network maintenance fee.</p>
 </form>
 </section>
 
-<!-- मेरी ट्रिप्स (यात्री का रिकॉर्ड) -->
+<!-- मेरी ट्रिप्स -->
 <section class="card" id="orders">
-<h2>मेरी लाइव ट्रिप्स / Cloud Records (Customer View)</h2>
-<div id="bookingList">बुकिंग लिस्ट देखने के लिए कृपया पहले लॉग-इन करें।</div>
-<button onclick="fetchCloudBookings()" style="background:#101b35; color:white; margin-top:10px;">रिफ्रेश लिस्ट (Sync Cloud)</button>
+<h2>Active Itineraries / Cloud Records</h2>
+<div id="bookingList">Please authenticate to fetch cloud instances.</div>
+<button onclick="fetchCloudBookings()" style="background:#0f172a; color:white; margin-top:10px; border-radius:8px; padding:10px;">Sync Live Cloud</button>
 </section>
 
 <!-- राइडर / ड्राइवर पैनल सेक्शन -->
-<section class="card" id="riderSection" style="background: #111c36; color: white;">
-<h2 style="color: #f7bd35;">🏍️ राइडर / ड्राइवर पैनल (Rider Dashboard)</h2>
-<p class="small" style="color: #a0aec0;">यहाँ आस-पास की सभी नई लाइव बुकिंग रिक्वेस्ट दिखाई देंगी।</p>
+<section class="card" id="riderSection" style="background: #0f172a; color: white; border: 1px solid #1e293b;">
+<h2 style="color: #f97316;">📡 Global Node Panel (Rider Console)</h2>
+<p class="small" style="color: #94a3b8;">Real-time global routing mesh displaying unassigned local requests.</p>
 
-<div id="availableRidesList" style="color: #172033; background: white; padding: 15px; border-radius: 8px; margin-top: 10px;">
-    लॉग-इन करने के बाद उपलब्ध राइड्स देखने के लिए नीचे बटन दबाएं।
+<div id="availableRidesList" style="color: #0f172a; background: #f8fafc; padding: 18px; border-radius: 12px; margin-top: 15px;">
+    Authenticate console node to unlock radar streams.
 </div>
 
-<button onclick="fetchAllAvailableRides()" style="background:#f7bd35; color:#101b35; margin-top:15px;">
-🔄 नई राइड्स खोजें (Find Available Rides)
+<button onclick="fetchAllAvailableRides()" class="btn-primary" style="background:#f97316; color:white; margin-top:15px;">
+🔄 Ping Radar for Rides
 </button>
 </section>
 
 </main>
 
 <footer>
-<strong>ROAMRIDER</strong>
-<p>Travel freely. Discover more.</p>
-<p>© 2026 ROAMRIDER</p>
+<strong>🇮🇳 IndicRide Global Mobility</strong>
+<p>Architected for frictionless transit. Scaled globally, served locally.</p>
+<p>© 2026 IndicRide Tech Inc.</p>
 </footer>
 
 <script>
 const $ = id => document.getElementById(id);
 
-// आपकी असली Supabase URL और चाबी यहाँ सेट है
 const SUPABASE_URL = "https://supabase.co";
 const SUPABASE_KEY = "sb_publishable_6bHigquVR3qm-y9Kpa-j6Q_mzFDWEI1"; 
 
@@ -216,7 +218,7 @@ async function checkUserSession() {
     const { data } = await supabase.auth.getSession();
     if (data.session) {
         currentUser = data.session.user;
-        $("userStatus").innerText = `👤 ${currentUser.email.split('@')[0]}`;
+        $("userStatus").innerText = `👤 ${currentUser.email.split('@')}`;
         $("authSection").classList.add("hidden");
         fetchCloudBookings();
         fetchAllAvailableRides();
@@ -230,38 +232,8 @@ async function checkUserSession() {
 async function handleSignUp() {
     const email = $("authEmail").value.trim();
     const password = $("authPassword").value.trim();
-    if(!email || !password) { alert("ईमेल और पासवर्ड भरें"); return; }
-    $("authMessage").innerText = "🔄 अकाउंट बनाया जा रहा है...";
+    if(!email || !password) { alert("Fill all fields"); return; }
+    $("authMessage").innerText = "🔄 Deploying account node...";
     const { data, error } = await supabase.auth.signUp({ email, password });
     if(error) { $("authMessage").innerText = `❌ ${error.message}`; } 
-    else { $("authMessage").innerText = "✅ साइन-अप सफल! आप सीधे लॉग-इन (Sign In) कर सकते हैं।"; }
-}
-
-async function handleSignIn() {
-    const email = $("authEmail").value.trim();
-    const password = $("authPassword").value.trim();
-    if(!email || !password) { alert("ईमेल और पासवर्ड भरें"); return; }
-    $("authMessage").innerText = "🔄 लॉग-इन हो रहा है...";
-    const { data, error } = await supabase.auth.signInWithPassword({ email, password });
-    if(error) { $("authMessage").innerText = `❌ ${error.message}`; } 
-    else { $("authMessage").innerText = ""; checkUserSession(); }
-}
-
-function resetFareView() {
-    $("submitBtn").style.display = "none";
-    $("fareResult").innerHTML = "";
-}
-
-function calculateRealFare(distanceKM, vehicleType) {
-    let baseFare = vehicleType === "bike" ? 30 : 100;
-    let perKmRate = vehicleType === "bike" ? 6 : 12;
-    let driverEarning = vehicleType === "bike" ? 4 : 6;
-    let platformFee = 15; 
-
-    let total = baseFare + (distanceKM * (perKmRate + driverEarning)) + platformFee;
-    if (distanceKM > 20) { total = total * 1.10; }
-    return Math.round(total);
-}
-
-async function getRouteAndFare() {
   
