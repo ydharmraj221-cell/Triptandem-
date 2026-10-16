@@ -3,196 +3,247 @@
 <html lang="hi">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>TripTandem | Travel Together</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ROAMRIDER | Explore India</title>
 <style>
 *{box-sizing:border-box}
-body{margin:0;font-family:Arial,sans-serif;background:#f3f7fb;color:#183047}
-header{background:#102c46;color:white;padding:18px}
-nav{max-width:900px;margin:auto;display:flex;align-items:center;justify-content:space-between;gap:12px}
-.logo{font-size:24px;font-weight:bold;color:#65e6bd}
-select,input,button{font:inherit;border-radius:9px;padding:12px}
-input,select{width:100%;border:1px solid #ccd6e0;background:white}
-button{border:0;background:#087e70;color:white;font-weight:bold;cursor:pointer}
-nav select{width:110px}
-main{max-width:850px;margin:24px auto;padding:0 14px}
-.hero,.card{background:white;border-radius:18px;padding:22px;margin-bottom:18px;box-shadow:0 4px 20px #102c4610}
-.hero{background:#e2f7f0}
-h1{font-size:30px;margin:0 0 10px}
-h2{margin-top:0;font-size:22px}
-p{line-height:1.6;color:#536579}
-.tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}
-.tabs button{flex:1;min-width:125px}
-.tabs button.active{background:#102c46}
-label{display:block;font-weight:bold;margin:14px 0 7px}
+body{margin:0;font-family:Arial,sans-serif;background:#f5f7fb;color:#172033}
+header{background:#101b35;color:white;padding:20px}
+nav{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+.logo{font-size:24px;font-weight:900;color:#f7bd35}
+nav a{color:white;text-decoration:none;margin:5px}
+.hero{padding:45px 20px;text-align:center;background:#17294b;color:white}
+.hero h1{font-size:35px;margin:5px}
+.hero p{line-height:1.6}
+main{max-width:850px;margin:auto;padding:18px}
+.card{background:white;border-radius:16px;padding:20px;margin:16px 0;box-shadow:0 5px 20px #15234412}
+label{display:block;font-weight:bold;margin:13px 0 6px}
+input,select,button{width:100%;padding:13px;border-radius:9px;border:1px solid #d5dbea;font-size:16px}
+button{background:#f7bd35;border:0;font-weight:bold;cursor:pointer;margin-top:14px}
+button:hover{background:#e9aa20}
 .grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-.primary{width:100%;margin-top:18px}
-.result{background:#e2f7f0;border-radius:12px;padding:16px;margin-top:16px}
-.price{font-size:30px;font-weight:bold;color:#087e70}
-.notice{font-size:13px;color:#64748b}
-[hidden]{display:none!important}
-footer{text-align:center;padding:24px;color:#64748b}
-@media(max-width:500px){.grid{grid-template-columns:1fr}.hero,.card{padding:17px}h1{font-size:25px}}
+.price{font-size:28px;font-weight:bold;color:#117a52}
+.small{font-size:13px;color:#647087;line-height:1.5}
+footer{text-align:center;padding:25px;background:#101b35;color:white}
+@media(max-width:520px){.grid{grid-template-columns:1fr}.hero h1{font-size:28px}}
 </style>
 </head>
 <body>
-<header><nav>
-<div class="logo">TripTandem 🌍</div>
-<select id="language" aria-label="Language">
+<header>
+<nav>
+<div class="logo">🐅 ROAMRIDER</div>
+<div>
+<a href="#book">बुकिंग</a>
+<a href="#services">सेवाएँ</a>
+<a href="#orders">मेरी ट्रिप</a>
+</div>
+</nav>
+</header>
+
+<section class="hero">
+<h1 id="heroTitle">Explore India Your Way</h1>
+<p id="heroText">अपनी यात्रा चुनें। अपनी भाषा में घूमें।</p>
+<button onclick="document.getElementById('book').scrollIntoView({behavior:'smooth'})">
+अभी ट्रिप प्लान करें
+</button>
+</section>
+
+<main>
+<section class="card">
+<label for="language">Language / भाषा चुनें</label>
+<select id="language" onchange="changeLanguage()">
 <option value="hi">हिंदी</option>
 <option value="en">English</option>
 </select>
-</nav></header>
-
-<main>
-<section class="hero">
-<h1 id="welcome">सफर आपका, यादें हमारी।</h1>
-<p id="intro">अपनी पसंद की जगह खोजें, बाइक या कार चुनें और सफर का अनुमानित किराया जानें।</p>
 </section>
 
-<div class="tabs">
-<button id="bookTab" class="active" type="button">🧳 ट्रिप बुक करें</button>
-<button id="riderTab" type="button">🏍️ राइडर बनें</button>
+<section class="card" id="services">
+<h2 id="serviceTitle">हमारी सेवाएँ</h2>
+<div class="grid">
+<div><h3>🚗 कार ट्रिप</h3><p>परिवार और दोस्तों के साथ सफर।</p></div>
+<div><h3>🏍️ बाइक ट्रिप</h3><p>स्थानीय राइडर के साथ घूमने का विकल्प।</p></div>
+<div><h3>🏛️ साइटसीइंग</h3><p>अपनी पसंद के पर्यटन स्थल चुनें।</p></div>
+<div><h3>💰 पारदर्शी किराया</h3><p>बुकिंग से पहले अनुमानित किराया देखें।</p></div>
 </div>
+</section>
 
-<section class="card" id="booking">
+<section class="card" id="book">
 <h2 id="bookingTitle">अपनी ट्रिप प्लान करें</h2>
-<form id="tripForm">
-<label for="from" id="fromLabel">कहाँ से चलना है?</label>
-<input id="from" required value="Chitrakoot, Uttar Pradesh, India">
-<label for="to" id="toLabel">कहाँ घूमने जाना है?</label>
-<input id="to" required placeholder="जैसे Taj Mahal, Agra">
+<form id="bookingForm">
+<label for="name">आपका नाम / Your name</label>
+<input id="name" required maxlength="70" placeholder="अपना नाम लिखें">
+
+<label for="phone">मोबाइल नंबर / Mobile</label>
+<input id="phone" required inputmode="numeric" pattern="[0-9]{10}" placeholder="10 अंकों का नंबर">
+
+<label for="city">कहाँ घूमना है? / Destination</label>
+<input id="city" required maxlength="100" placeholder="जैसे चित्रकूट, ताजमहल आगरा">
+
 <div class="grid">
-<div><label for="vehicle" id="vehicleLabel">वाहन</label>
-<select id="vehicle"><option value="bike">🏍️ बाइक</option><option value="car">🚗 कार</option></select></div>
-<div><label for="date" id="dateLabel">यात्रा की तारीख</label>
-<input id="date" type="date" required></div>
+<div>
+<label for="vehicle">सवारी / Vehicle</label>
+<select id="vehicle">
+<option value="bike">बाइक</option>
+<option value="car">कार</option>
+</select>
 </div>
-<label for="people" id="peopleLabel">यात्रियों की संख्या</label>
-<select id="people"><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option></select>
-<button class="primary" id="calculate" type="submit">📍 दूरी और किराया निकालें</button>
+<div>
+<label for="people">यात्री / People</label>
+<select id="people">
+<option value="1">1 व्यक्ति</option>
+<option value="2">2 व्यक्ति</option>
+<option value="3">3 व्यक्ति</option>
+<option value="4">4 व्यक्ति</option>
+<option value="5">5 व्यक्ति</option>
+</select>
+</div>
+</div>
+
+<label for="km">अनुमानित कुल दूरी (किमी)</label>
+<input id="km" type="number" min="1" max="2000" required placeholder="कुल आने-जाने की दूरी">
+
+<label for="hours">ट्रिप की अवधि</label>
+<select id="hours">
+<option value="4">4 घंटे</option>
+<option value="8">8 घंटे</option>
+<option value="12">12 घंटे</option>
+</select>
+
+<button type="button" onclick="calculateFare()">अनुमानित किराया देखें</button>
+<div id="fareResult" aria-live="polite"></div>
+<button type="submit">बुकिंग रिक्वेस्ट बनाएँ</button>
+<p class="small">यह केवल अनुमान है। वास्तविक दूरी, उपलब्धता, ईंधन, ड्राइवर का भुगतान और वापसी की दूरी के अनुसार किराया बदल सकता है।</p>
 </form>
-<div id="message" role="status" aria-live="polite"></div>
-<div id="fareResult" class="result" hidden></div>
 </section>
 
-<section class="card" id="rider" hidden>
-<h2 id="riderTitle">TripTandem राइडर / गाइड बनें</h2>
-<p id="riderIntro">अपनी जानकारी भरें। यह फॉर्म अभी केवल इसी ब्राउज़र में डेमो रिकॉर्ड सेव करेगा।</p>
-<form id="riderForm">
-<label for="riderName" id="nameLabel">पूरा नाम</label>
-<input id="riderName" required>
-<label for="phone" id="phoneLabel">मोबाइल नंबर</label>
-<input id="phone" type="tel" required pattern="[0-9+() -]{8,18}" placeholder="अपना संपर्क नंबर">
-<div class="grid">
-<div><label for="city" id="cityLabel">शहर / सेवा क्षेत्र</label><input id="city" required></div>
-<div><label for="rideVehicle" id="rideVehicleLabel">वाहन</label>
-<select id="rideVehicle"><option value="bike">बाइक</option><option value="car">कार</option></select></div>
-</div>
-<label for="experience" id="experienceLabel">अनुभव / गाइड की जानकारी</label>
-<input id="experience" placeholder="जैसे स्थानीय पर्यटन गाइड">
-<label><input type="checkbox" id="agree" required style="width:auto"> <span id="agreeText">मैं दी गई जानकारी के उपयोग के लिए सहमत हूँ।</span></label>
-<button class="primary" type="submit" id="register">राइडर रजिस्ट्रेशन भेजें</button>
-</form>
-<div id="riderMessage" role="status" aria-live="polite"></div>
-</section>
-
-<section class="card">
-<h2 id="howTitle">TripTandem कैसे काम करता है?</h2>
-<p id="howText">1. ट्रिप की जानकारी भरें।<br>2. दूरी और अनुमानित किराया देखें।<br>3. बुकिंग रिक्वेस्ट का डेमो बनाएँ।<br>4. राइडर बनने के लिए अपना फॉर्म भरें।</p>
-<p class="notice" id="disclaimer">महत्वपूर्ण: यह शुरुआती डेमो है। बुकिंग अभी किसी ड्राइवर को नहीं भेजी जाती। किराया अनुमान है, पक्का कोट नहीं।</p>
+<section class="card" id="orders">
+<h2>मेरी ट्रिप / My Trips</h2>
+<div id="bookingList">अभी कोई सेव की गई रिक्वेस्ट नहीं है।</div>
+<button onclick="clearBookings()">सभी स्थानीय रिक्वेस्ट हटाएँ</button>
+<p class="small">रिक्वेस्ट केवल इसी ब्राउज़र में सेव होती हैं। यह लाइव सर्वर बुकिंग नहीं है।</p>
 </section>
 </main>
-<footer>TripTandem © 2026</footer>
+
+<footer>
+<strong>ROAMRIDER</strong>
+<p>Travel freely. Discover more.</p>
+<p>© 2026 ROAMRIDER</p>
+</footer>
 
 <script>
-const $=id=>document.getElementById(id);
-let lang="hi",lastTrip=null;
-const text={
-hi:{
-welcome:"सफर आपका, यादें हमारी।",intro:"अपनी पसंद की जगह खोजें, बाइक या कार चुनें और सफर का अनुमानित किराया जानें।",
-book:"🧳 ट्रिप बुक करें",rider:"🏍️ राइडर बनें",bookingTitle:"अपनी ट्रिप प्लान करें",
-from:"कहाँ से चलना है?",to:"कहाँ घूमने जाना है?",vehicle:"वाहन",date:"यात्रा की तारीख",people:"यात्रियों की संख्या",calculate:"📍 दूरी और किराया निकालें",
-riderTitle:"TripTandem राइडर / गाइड बनें",riderIntro:"अपनी जानकारी भरें। अभी यह फॉर्म डेमो रिकॉर्ड सेव करता है।",
-name:"पूरा नाम",phone:"मोबाइल नंबर",city:"शहर / सेवा क्षेत्र",rideVehicle:"वाहन",experience:"अनुभव / गाइड की जानकारी",agree:"मैं दी गई जानकारी के उपयोग के लिए सहमत हूँ।",register:"राइडर रजिस्ट्रेशन भेजें",
-howTitle:"TripTandem कैसे काम करता है?",howText:"1. ट्रिप की जानकारी भरें।<br>2. दूरी और अनुमानित किराया देखें।<br>3. बुकिंग रिक्वेस्ट का डेमो बनाएँ।<br>4. राइडर बनने के लिए अपना फॉर्म भरें।",
-disclaimer:"महत्वपूर्ण: यह शुरुआती डेमो है। बुकिंग अभी किसी ड्राइवर को नहीं भेजी जाती। किराया अनुमान है, पक्का कोट नहीं।",
-loading:"जगह और रास्ता खोज रहे हैं…",error:"दूरी नहीं मिली। जगह के नाम और इंटरनेट कनेक्शन जाँचें।",
-one:"एक तरफ की सड़क दूरी",round:"आने-जाने की दूरी",fuel:"ईंधन का अनुमान",driver:"ड्राइवर की कमाई",maint:"वाहन रखरखाव",commission:"प्लेटफॉर्म कमीशन",total:"अनुमानित कुल किराया",request:"बुकिंग रिक्वेस्ट बनाएँ",saved:"डेमो रिक्वेस्ट इस ब्राउज़र में सेव हुई। अभी कोई ड्राइवर इसे नहीं देख सकता।",registered:"डेमो रजिस्ट्रेशन इस ब्राउज़र में सेव हुआ। अभी लाइव राइडर अकाउंट नहीं बना है।",empty:"खाली वापसी की दूरी भी हिसाब में शामिल है।"
-},
-en:{
-welcome:"Your journey. Your memories.",intro:"Choose a destination, select a bike or car, and estimate your trip fare.",
-book:"🧳 Book a Trip",rider:"🏍️ Become a Rider",bookingTitle:"Plan your trip",
-from:"Pickup location",to:"Destination",vehicle:"Vehicle",date:"Travel date",people:"Number of travellers",calculate:"📍 Calculate distance & fare",
-riderTitle:"Become a TripTandem Rider / Guide",riderIntro:"Fill in your details. This form saves a demo record only.",
-name:"Full name",phone:"Phone number",city:"City / service area",rideVehicle:"Vehicle",experience:"Experience / guide details",agree:"I consent to the use of the information provided.",register:"Submit rider registration",
-howTitle:"How TripTandem works",howText:"1. Enter your trip details.<br>2. View the estimated distance and fare.<br>3. Create a demo booking request.<br>4. Submit the rider registration form.",
-disclaimer:"Important: This is an early demo. Bookings are not sent to drivers. Fares are estimates, not confirmed quotes.",
-loading:"Finding locations and road route…",error:"Could not find the route. Check the place names and internet connection.",
-one:"One-way road distance",round:"Round-trip distance",fuel:"Estimated fuel",driver:"Driver earnings",maint:"Vehicle maintenance",commission:"Platform commission",total:"Estimated total fare",request:"Create booking request",saved:"Demo request saved in this browser. No driver can see it yet.",registered:"Demo registration saved in this browser. No live rider account exists yet.",empty:"Empty return travel is included in the calculation."
-}};
-function setLanguage(){
-lang=$("language").value;document.documentElement.lang=lang;const t=text[lang];
-const map={welcome:"welcome",intro:"intro",bookingTitle:"bookingTitle",fromLabel:"from",toLabel:"to",vehicleLabel:"vehicle",dateLabel:"date",peopleLabel:"people",calculate:"calculate",bookTab:"book",riderTab:"rider",riderTitle:"riderTitle",riderIntro:"riderIntro",nameLabel:"name",phoneLabel:"phone",cityLabel:"city",rideVehicleLabel:"rideVehicle",experienceLabel:"experience",agreeText:"agree",register:"register",howTitle:"howTitle",howText:"howText",disclaimer:"disclaimer"};
-for(const id in map)$(id).innerHTML=t[map[id]];
+const $ = id => document.getElementById(id);
+
+function calculateFare(){
+  const km = Number($("km").value);
+  const hours = Number($("hours").value);
+  const vehicle = $("vehicle").value;
+
+  if(!Number.isFinite(km) || km < 1 || km > 2000){
+    alert("कृपया 1 से 2000 किमी के बीच दूरी भरें।");
+    return;
+  }
+
+  // केवल डेमो अनुमान; वास्तविक स्थानीय दरें अभी निर्धारित नहीं हैं।
+  const rate = vehicle === "bike" ? 8 : 15;
+  const base = vehicle === "bike" ? 250 : 700;
+  const timeFee = Math.max(0, hours - 4) *
+                  (vehicle === "bike" ? 30 : 75);
+  const fare = Math.ceil(Math.max(base, km * rate + timeFee));
+
+  $("fareResult").innerHTML =
+    '<p>अनुमानित किराया</p><div class="price">₹' +
+    fare.toLocaleString("en-IN") +
+    '</div><p class="small">डेमो दर। इसमें वास्तविक ड्राइवर उपलब्धता, वापसी का खाली सफर, टोल और अन्य खर्चों की पुष्टि शामिल नहीं है।</p>';
 }
-$("language").addEventListener("change",setLanguage);
-function showTab(which){
-const isBook=which==="book";
-$("booking").hidden=!isBook;$("rider").hidden=isBook;
-$("bookTab").classList.toggle("active",isBook);$("riderTab").classList.toggle("active",!isBook);
-}
-$("bookTab").onclick=()=>showTab("book");
-$("riderTab").onclick=()=>showTab("rider");
-$("date").min=new Date().toLocaleDateString("en-CA");
-function money(n){return "₹"+Math.round(n).toLocaleString("en-IN")}
-$("tripForm").addEventListener("submit",async e=>{
-e.preventDefault();const t=text[lang],btn=$("calculate");btn.disabled=true;$("message").textContent=t.loading;$("fareResult").hidden=true;
-try{
-async function locate(q){
-const r=await fetch("https://nominatim.openstreetmap.org/search?format=jsonv2&limit=1&q="+encodeURIComponent(q));
-if(!r.ok)throw Error();
-const d=await r.json();if(!d.length)throw Error();return d[0];
-}
-const a=await locate($("from").value),b=await locate($("to").value);
-const r=await fetch(`https://router.project-osrm.org/route/v1/driving/${a.lon},${a.lat};${b.lon},${b.lat}?overview=false`);
-const d=await r.json();if(!r.ok||d.code!=="Ok"||!d.routes.length)throw Error();
-const km=d.routes[0].distance/1000,round=km*2,bike=$("vehicle").value==="bike";
-const fuel=round/(bike?45:14)*100;
-const driver=(bike?200:600)+round*(bike?5:10);
-const maintenance=round*(bike?1.5:3);
-const fare=Math.max(bike?299:999,(fuel+driver+maintenance)/.88);
-const commission=fare*.12;
-lastTrip={from:$("from").value,to:$("to").value,vehicle:$("vehicle").value,date:$("date").value,people:$("people").value,km,round,fare};
-$("message").textContent="";
-$("fareResult").hidden=false;
-$("fareResult").innerHTML=`<h2>${t.total}</h2><div class="price">${money(fare)}</div>
-<p><b>${t.one}:</b> ${km.toFixed(1)} km</p><p><b>${t.round}:</b> ${round.toFixed(1)} km</p>
-<p>${t.fuel}: ${money(fuel)}<br>${t.driver}: ${money(driver)}<br>${t.maint}: ${money(maintenance)}<br>${t.commission}: ${money(commission)}</p>
-<p class="notice">${t.empty}</p><button id="requestTrip" type="button">${t.request}</button>
-<p><a target="_blank" rel="noopener" href="https://www.openstreetmap.org/directions?engine=fossgis_osrm_car&route=${a.lat}%2C${a.lon}%3B${b.lat}%2C${b.lon}">Open route map / नक्शा खोलें</a></p>`;
-$("requestTrip").onclick=()=>{
-try{
-const all=JSON.parse(localStorage.getItem("tt_demo_bookings")||"[]");
-all.push({...lastTrip,createdAt:new Date().toISOString(),status:"Demo request"});
-localStorage.setItem("tt_demo_bookings",JSON.stringify(all));
-$("message").textContent=t.saved;
-}catch(e){$("message").textContent=t.error;}
-};
-}catch(err){$("message").textContent=t.error;}
-finally{btn.disabled=false;}
+
+$("bookingForm").addEventListener("submit", function(e){
+  e.preventDefault();
+
+  const booking = {
+    id: Date.now(),
+    name: $("name").value.trim(),
+    phone: $("phone").value.trim(),
+    destination: $("city").value.trim(),
+    vehicle: $("vehicle").value,
+    people: $("people").value,
+    km: $("km").value,
+    hours: $("hours").value,
+    created: new Date().toLocaleString()
+  };
+
+  if(!booking.name || !booking.destination ||
+     !/^[0-9]{10}$/.test(booking.phone)){
+    alert("कृपया सभी जानकारी सही भरें।");
+    return;
+  }
+
+  try{
+    const bookings = JSON.parse(
+      localStorage.getItem("roamrider_demo_bookings") || "[]"
+    );
+    bookings.push(booking);
+    localStorage.setItem(
+      "roamrider_demo_bookings", JSON.stringify(bookings)
+    );
+    alert("रिक्वेस्ट इस ब्राउज़र में सेव हो गई! यह वास्तविक ऑनलाइन बुकिंग नहीं है।");
+    this.reset();
+    $("fareResult").textContent = "";
+    renderBookings();
+    $("orders").scrollIntoView({behavior:"smooth"});
+  }catch(err){
+    alert("रिक्वेस्ट सेव नहीं हो सकी। ब्राउज़र स्टोरेज की सेटिंग जाँचें।");
+  }
 });
-$("riderForm").addEventListener("submit",e=>{
-e.preventDefault();const t=text[lang];
-try{
-const all=JSON.parse(localStorage.getItem("tt_demo_riders")||"[]");
-all.push({name:$("riderName").value,phone:$("phone").value,city:$("city").value,vehicle:$("rideVehicle").value,experience:$("experience").value,createdAt:new Date().toISOString()});
-localStorage.setItem("tt_demo_riders",JSON.stringify(all));
-$("riderMessage").textContent=t.registered;
-$("riderForm").reset();
-}catch(err){$("riderMessage").textContent="Could not save this demo record.";}
-});
-setLanguage();
+
+function renderBookings(){
+  try{
+    const bookings = JSON.parse(
+      localStorage.getItem("roamrider_demo_bookings") || "[]"
+    );
+    const list = $("bookingList");
+    list.textContent = "";
+
+    if(!bookings.length){
+      list.textContent = "अभी कोई सेव की गई रिक्वेस्ट नहीं है।";
+      return;
+    }
+
+    bookings.slice().reverse().forEach(b=>{
+      const item = document.createElement("div");
+      item.className = "card";
+      const title = document.createElement("h3");
+      title.textContent = b.destination;
+      const details = document.createElement("p");
+      details.textContent =
+        b.name + " | " + b.vehicle + " | " +
+        b.km + " किमी | " + b.created;
+      item.append(title, details);
+      list.appendChild(item);
+    });
+  }catch(err){
+    $("bookingList").textContent = "बुकिंग डेटा पढ़ा नहीं जा सका।";
+  }
+}
+
+function clearBookings(){
+  if(confirm("क्या आप इसी ब्राउज़र की सभी डेमो रिक्वेस्ट हटाना चाहते हैं?")){
+    localStorage.removeItem("roamrider_demo_bookings");
+    renderBookings();
+  }
+}
+
+function changeLanguage(){
+  const en = $("language").value === "en";
+  $("heroTitle").textContent = en
+    ? "Explore India Your Way" : "अपनी पसंद से भारत घूमें";
+  $("heroText").textContent = en
+    ? "Plan your journey in your preferred language."
+    : "अपनी यात्रा चुनें। अपनी भाषा में घूमें।";
+  $("serviceTitle").textContent = en ? "Our Services" : "हमारी सेवाएँ";
+  $("bookingTitle").textContent = en ? "Plan Your Trip" : "अपनी ट्रिप प्लान करें";
+}
+
+renderBookings();
 </script>
 </body>
 </html>
