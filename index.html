@@ -1,10 +1,11 @@
-
 <!DOCTYPE html>
 <html lang="hi">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>ROAMRIDER | Explore India</title>
+<!-- Supabase Client Library CDN -->
+<script src="https://jsdelivr.net"></script>
 <style>
 *{box-sizing:border-box}
 body{margin:0;font-family:Arial,sans-serif;background:#f5f7fb;color:#172033}
@@ -22,13 +23,18 @@ input,select,button{width:100%;padding:13px;border-radius:9px;border:1px solid #
 button{background:#f7bd35;border:0;font-weight:bold;cursor:pointer;margin-top:14px}
 button:hover{background:#e9aa20}
 .grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-.price{font-size:28px;font-weight:bold;color:#117a52}
-.small{font-size:13px;color:#647087;line-height:1.5}
+.price{font-size:28px;font-weight:bold;color:#117a52;margin-top:10px}
+.small{font-size:13px;color:#647087;line-height:1.5;margin-top:8px}
+.status-badge{display:inline-block;padding:4px 8px;border-radius:4px;font-size:12px;font-weight:bold;background:#e2e8f0}
+.status-pending{background:#feebc8;color:#c05621}
+.status-confirmed{background:#c6f6d5;color:#22543d}
 footer{text-align:center;padding:25px;background:#101b35;color:white}
+.hidden{display:none !important}
 @media(max-width:520px){.grid{grid-template-columns:1fr}.hero h1{font-size:28px}}
 </style>
 </head>
 <body>
+
 <header>
 <nav>
 <div class="logo">🐅 ROAMRIDER</div>
@@ -36,6 +42,7 @@ footer{text-align:center;padding:25px;background:#101b35;color:white}
 <a href="#book">बुकिंग</a>
 <a href="#services">सेवाएँ</a>
 <a href="#orders">मेरी ट्रिप</a>
+<span id="userStatus" style="color:#f7bd35; margin-left:10px; font-weight:bold;"></span>
 </div>
 </nav>
 </header>
@@ -49,14 +56,37 @@ footer{text-align:center;padding:25px;background:#101b35;color:white}
 </section>
 
 <main>
+<!-- भाषा चयन -->
 <section class="card">
 <label for="language">Language / भाषा चुनें</label>
 <select id="language" onchange="changeLanguage()">
-<option value="hi">हिंदी</option>
+<option value="hi">हिंदी (Hindi)</option>
 <option value="en">English</option>
 </select>
 </section>
 
+<!-- Supabase Auth (लॉग-इन / साइन-अप) सेक्शन -->
+<section class="card" id="authSection">
+<h2 id="authTitle">यात्री अकाउंट (लॉग-इन / साइन-अप)</h2>
+<p class="small">सुरक्षित बुकिंग क्लाउड में सेव करने के लिए लॉग-इन करना ज़रूरी है।</p>
+<div class="grid">
+  <div>
+    <label for="authEmail">ईमेल आईडी / Email</label>
+    <input type="email" id="authEmail" placeholder="email@example.com">
+  </div>
+  <div>
+    <label for="authPassword">पासवर्ड / Password</label>
+    <input type="password" id="authPassword" placeholder="******">
+  </div>
+</div>
+<div class="grid">
+  <button type="button" onclick="handleSignUp()" style="background:#e2e8f0; color:#172033;">नया अकाउंट बनाएं (Sign Up)</button>
+  <button type="button" onclick="handleSignIn()">लॉग-इन करें (Sign In)</button>
+</div>
+<div id="authMessage" class="small" style="font-weight:bold; color:red;"></div>
+</section>
+
+<!-- सेवाएँ -->
 <section class="card" id="services">
 <h2 id="serviceTitle">हमारी सेवाएँ</h2>
 <div class="grid">
@@ -67,24 +97,28 @@ footer{text-align:center;padding:25px;background:#101b35;color:white}
 </div>
 </section>
 
-<section class="card" id="book">
+<!-- मुख्य बुकिंग फॉर्म -->
+<section class="card id-disabled" id="book">
 <h2 id="bookingTitle">अपनी ट्रिप प्लान करें</h2>
-<form id="bookingForm">
-<label for="name">आपका नाम / Your name</label>
-<input id="name" required maxlength="70" placeholder="अपना नाम लिखें">
+<form id="bookingForm" onsubmit="handleBookingSubmit(event)">
 
-<label for="phone">मोबाइल नंबर / Mobile</label>
-<input id="phone" required inputmode="numeric" pattern="[0-9]{10}" placeholder="10 अंकों का नंबर">
-
-<label for="city">कहाँ घूमना है? / Destination</label>
-<input id="city" required maxlength="100" placeholder="जैसे चित्रकूट, ताजमहल आगरा">
+<div class="grid">
+  <div>
+    <label for="pickup">कहाँ से शुरू करना है? / Pickup</label>
+    <input id="pickup" required placeholder="जैसे: चित्रकूट रेलवे स्टेशन">
+  </div>
+  <div>
+    <label for="destination">कहाँ तक जाना है? / Destination</label>
+    <input id="destination" required placeholder="जैसे: रामघाट चित्रकूट">
+  </div>
+</div>
 
 <div class="grid">
 <div>
 <label for="vehicle">सवारी / Vehicle</label>
-<select id="vehicle">
-<option value="bike">बाइक</option>
-<option value="car">कार</option>
+<select id="vehicle" onchange="resetFareView()">
+<option value="bike">🏍️ बाइक (Bike)</option>
+<option value="car">🚗 कार (Car)</option>
 </select>
 </div>
 <div>
@@ -99,28 +133,41 @@ footer{text-align:center;padding:25px;background:#101b35;color:white}
 </div>
 </div>
 
-<label for="km">अनुमानित कुल दूरी (किमी)</label>
-<input id="km" type="number" min="1" max="2000" required placeholder="कुल आने-जाने की दूरी">
+<div class="grid">
+  <div>
+    <label for="tripDate">यात्रा की तारीख / Date</label>
+    <input type="date" id="tripDate" required>
+  </div>
+  <div>
+    <label for="passengerName">यात्री का नाम</label>
+    <input type="text" id="passengerName" required placeholder="नाम लिखें">
+  </div>
+</div>
 
-<label for="hours">ट्रिप की अवधि</label>
-<select id="hours">
-<option value="4">4 घंटे</option>
-<option value="8">8 घंटे</option>
-<option value="12">12 घंटे</option>
-</select>
+<!-- ऑटोमैटिक दूरी और समय डिस्प्ले ग्रिड -->
+<div class="grid" style="margin-top: 15px; background: #eef2f7; padding: 12px; border-radius: 8px;">
+  <div>
+    <strong>🚗 रूट रोड दूरी:</strong> <span id="routeDistance">00</span> किमी
+  </div>
+  <div>
+    <strong>⏱️ अनुमानित समय:</strong> <span id="routeTime">00</span> मिनट
+  </div>
+</div>
 
-<button type="button" onclick="calculateFare()">अनुमानित किराया देखें</button>
+<button type="button" onclick="getRouteAndFare()" style="background:#17294b; color:white;">1. ऑटोमैटिक दूरी और किराया निकालें</button>
+
 <div id="fareResult" aria-live="polite"></div>
-<button type="submit">बुकिंग रिक्वेस्ट बनाएँ</button>
-<p class="small">यह केवल अनुमान है। वास्तविक दूरी, उपलब्धता, ईंधन, ड्राइवर का भुगतान और वापसी की दूरी के अनुसार किराया बदल सकता है।</p>
+
+<button type="submit" id="submitBtn" style="background:#117a52; color:white; display:none; margin-top:20px;">2. बुकिंग रिक्वेस्ट सेव करें (Confirm Booking)</button>
+<p class="small">नोट: किराया वास्तविक रोड दूरी, न्यूनतम चार्ज, ड्राइवर अर्निंग और ₹15 प्लेटफॉर्म फीस को जोड़कर पारदर्शी रूप से बनाया गया है।</p>
 </form>
 </section>
 
+<!-- मेरी ट्रिप्स -->
 <section class="card" id="orders">
-<h2>मेरी ट्रिप / My Trips</h2>
-<div id="bookingList">अभी कोई सेव की गई रिक्वेस्ट नहीं है।</div>
-<button onclick="clearBookings()">सभी स्थानीय रिक्वेस्ट हटाएँ</button>
-<p class="small">रिक्वेस्ट केवल इसी ब्राउज़र में सेव होती हैं। यह लाइव सर्वर बुकिंग नहीं है।</p>
+<h2>मेरी लाइव ट्रिप्स / Cloud Records</h2>
+<div id="bookingList">बुकिंग लिस्ट देखने के लिए कृपया पहले लॉग-इन करें।</div>
+<button onclick="fetchCloudBookings()" style="background:#101b35; color:white; margin-top:10px;">रिफ्रेश लिस्ट (Sync Cloud)</button>
 </section>
 </main>
 
@@ -133,117 +180,100 @@ footer{text-align:center;padding:25px;background:#101b35;color:white}
 <script>
 const $ = id => document.getElementById(id);
 
-function calculateFare(){
-  const km = Number($("km").value);
-  const hours = Number($("hours").value);
-  const vehicle = $("vehicle").value;
+// 🛑 यहाँ अपनी Supabase URL और KEY डालें (Publishable वाली)
+const SUPABASE_URL = "https://supabase.co";
+const SUPABASE_KEY = "YOUR_SUPABASE_PUBLISHABLE_KEY"; // <-- यहाँ अपनी असली Publishable key पेस्ट करें!
 
-  if(!Number.isFinite(km) || km < 1 || km > 2000){
-    alert("कृपया 1 से 2000 किमी के बीच दूरी भरें।");
-    return;
-  }
+// Supabase क्लाइंट चालू करना
+const supabase = typeof createClient !== 'undefined' ? createClient(SUPABASE_URL, SUPABASE_KEY) : null;
 
-  // केवल डेमो अनुमान; वास्तविक स्थानीय दरें अभी निर्धारित नहीं हैं।
-  const rate = vehicle === "bike" ? 8 : 15;
-  const base = vehicle === "bike" ? 250 : 700;
-  const timeFee = Math.max(0, hours - 4) *
-                  (vehicle === "bike" ? 30 : 75);
-  const fare = Math.ceil(Math.max(base, km * rate + timeFee));
+let calculatedDistanceKM = 0;
+let calculatedDurationMin = 0;
+let finalEstimatedFare = 0;
+let currentUser = null;
 
-  $("fareResult").innerHTML =
-    '<p>अनुमानित किराया</p><div class="price">₹' +
-    fare.toLocaleString("en-IN") +
-    '</div><p class="small">डेमो दर। इसमें वास्तविक ड्राइवर उपलब्धता, वापसी का खाली सफर, टोल और अन्य खर्चों की पुष्टि शामिल नहीं है।</p>';
+// पेज लोड होने पर यूजर की स्थिति चेक करना
+window.onload = function() {
+    // तारीख में आज की न्यूनतम तारीख सेट करना
+    const today = new Date().toISOString().split('T')[0];
+    $("tripDate").setAttribute('min', today);
+    
+    if(supabase) {
+        checkUserSession();
+    } else {
+        alert("Supabase कनेक्ट नहीं हो पाया। कृपया इंटरनेट या CDN स्क्रिप्ट चेक करें।");
+    }
+};
+
+async function checkUserSession() {
+    const { data } = await supabase.auth.getSession();
+    if (data.session) {
+        currentUser = data.session.user;
+        $("userStatus").innerText = `👤 ${currentUser.email.split('@')[0]}`;
+        $("authSection").classList.add("hidden");
+        fetchCloudBookings();
+    } else {
+        currentUser = null;
+        $("userStatus").innerText = "";
+        $("authSection").classList.remove("hidden");
+    }
 }
 
-$("bookingForm").addEventListener("submit", function(e){
-  e.preventDefault();
+// नया अकाउंट बनाने का फंक्शन
+async function handleSignUp() {
+    const email = $("authEmail").value.trim();
+    const password = $("authPassword").value.trim();
+    if(!email || !password) { alert("ईमेल और पासवर्ड भरें"); return; }
+    
+    $("authMessage").innerText = "🔄 अकाउंट बनाया जा रहा है...";
+    const { data, error } = await supabase.auth.signUp({ email, password });
+    if(error) {
+        $("authMessage").innerText = `❌ ${error.message}`;
+    } else {
+        $("authMessage").innerText = "✅ साइन-अप सफल! आपके ईमेल पर पुष्टिकरण लिंक भेजा गया हो सकता है या आप सीधे लॉग-इन कर सकते हैं।";
+    }
+}
 
-  const booking = {
-    id: Date.now(),
-    name: $("name").value.trim(),
-    phone: $("phone").value.trim(),
-    destination: $("city").value.trim(),
-    vehicle: $("vehicle").value,
-    people: $("people").value,
-    km: $("km").value,
-    hours: $("hours").value,
-    created: new Date().toLocaleString()
-  };
+// लॉग-इन करने का फंक्शन
+async function handleSignIn() {
+    const email = $("authEmail").value.trim();
+    const password = $("authPassword").value.trim();
+    if(!email || !password) { alert("ईमेल और पासवर्ड भरें"); return; }
+    
+    $("authMessage").innerText = "🔄 लॉग-इन हो रहा है...";
+    const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+    if(error) {
+        $("authMessage").innerText = `❌ ${error.message}`;
+    } else {
+        $("authMessage").innerText = "";
+        checkUserSession();
+    }
+}
 
-  if(!booking.name || !booking.destination ||
-     !/^[0-9]{10}$/.test(booking.phone)){
-    alert("कृपया सभी जानकारी सही भरें।");
-    return;
-  }
+// वाहन बदलने पर पिछला रेंडर रिसेट करना
+function resetFareView() {
+    $("submitBtn").style.display = "none";
+    $("fareResult").innerHTML = "";
+}
 
-  try{
-    const bookings = JSON.parse(
-      localStorage.getItem("roamrider_demo_bookings") || "[]"
-    );
-    bookings.push(booking);
-    localStorage.setItem(
-      "roamrider_demo_bookings", JSON.stringify(bookings)
-    );
-    alert("रिक्वेस्ट इस ब्राउज़र में सेव हो गई! यह वास्तविक ऑनलाइन बुकिंग नहीं है।");
-    this.reset();
-    $("fareResult").textContent = "";
-    renderBookings();
-    $("orders").scrollIntoView({behavior:"smooth"});
-  }catch(err){
-    alert("रिक्वेस्ट सेव नहीं हो सकी। ब्राउज़र स्टोरेज की सेटिंग जाँचें।");
-  }
-});
+// वास्तविक किराया फॉर्मूला गणना (Real Fare Logic)
+function calculateRealFare(distanceKM, vehicleType) {
+    let baseFare = 0;
+    let perKmRate = 0;
+    let driverEarning = 0;
+    let platformFee = 15; // फ़िक्स प्लेटफॉर्म कमीशन
 
-function renderBookings(){
-  try{
-    const bookings = JSON.parse(
-      localStorage.getItem("roamrider_demo_bookings") || "[]"
-    );
-    const list = $("bookingList");
-    list.textContent = "";
-
-    if(!bookings.length){
-      list.textContent = "अभी कोई सेव की गई रिक्वेस्ट नहीं है।";
-      return;
+    if (vehicleType === "bike") {
+        baseFare = 30;       // न्यूनतम किराया
+        perKmRate = 6;       // फ्यूल + मेंटेनेंस
+        driverEarning = 4;   // ड्राइवर की कमाई प्रति किमी
+    } else { 
+        baseFare = 100;      // कार न्यूनतम किराया
+        perKmRate = 12;      // फ्यूल + कार मेंटेनेंस
+        driverEarning = 6;   // ड्राइवर की कमाई प्रति किमी
     }
 
-    bookings.slice().reverse().forEach(b=>{
-      const item = document.createElement("div");
-      item.className = "card";
-      const title = document.createElement("h3");
-      title.textContent = b.destination;
-      const details = document.createElement("p");
-      details.textContent =
-        b.name + " | " + b.vehicle + " | " +
-        b.km + " किमी | " + b.created;
-      item.append(title, details);
-      list.appendChild(item);
-    });
-  }catch(err){
-    $("bookingList").textContent = "बुकिंग डेटा पढ़ा नहीं जा सका।";
-  }
-}
-
-function clearBookings(){
-  if(confirm("क्या आप इसी ब्राउज़र की सभी डेमो रिक्वेस्ट हटाना चाहते हैं?")){
-    localStorage.removeItem("roamrider_demo_bookings");
-    renderBookings();
-  }
-}
-
-function changeLanguage(){
-  const en = $("language").value === "en";
-  $("heroTitle").textContent = en
-    ? "Explore India Your Way" : "अपनी पसंद से भारत घूमें";
-  $("heroText").textContent = en
-    ? "Plan your journey in your preferred language."
-    : "अपनी यात्रा चुनें। अपनी भाषा में घूमें।";
-  $("serviceTitle").textContent = en ? "Our Services" : "हमारी सेवाएँ";
-  $("bookingTitle").textContent = en ? "Plan Your Trip" : "अपनी ट्रिप प्लान करें";
-}
-
-renderBookings();
-</script>
-</body>
-</html>
+    let total = baseFare + (distanceKM * (perKmRate + driverEarning)) + platformFee;
+    
+    // लॉन्ग रूट के लिए खाली वापसी बैकअप बोनस (10% extra)
+  
