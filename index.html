@@ -180,9 +180,9 @@ footer{text-align:center;padding:25px;background:#101b35;color:white}
 <script>
 const $ = id => document.getElementById(id);
 
-// 🛑 यहाँ अपनी Supabase URL और KEY डालें (Publishable वाली)
+// आपकी असली Supabase URL और चाबी यहाँ सेट कर दी गई है
 const SUPABASE_URL = "https://supabase.co";
-const SUPABASE_KEY = "YOUR_SUPABASE_PUBLISHABLE_KEY"; // <-- यहाँ अपनी असली Publishable key पेस्ट करें!
+const SUPABASE_KEY = "sb_publishable_6bHigquVR3qm-y9Kpa-j6Q_mzFDWEI1"; 
 
 // Supabase क्लाइंट चालू करना
 const supabase = typeof createClient !== 'undefined' ? createClient(SUPABASE_URL, SUPABASE_KEY) : null;
@@ -194,7 +194,6 @@ let currentUser = null;
 
 // पेज लोड होने पर यूजर की स्थिति चेक करना
 window.onload = function() {
-    // तारीख में आज की न्यूनतम तारीख सेट करना
     const today = new Date().toISOString().split('T')[0];
     $("tripDate").setAttribute('min', today);
     
@@ -230,7 +229,7 @@ async function handleSignUp() {
     if(error) {
         $("authMessage").innerText = `❌ ${error.message}`;
     } else {
-        $("authMessage").innerText = "✅ साइन-अप सफल! आपके ईमेल पर पुष्टिकरण लिंक भेजा गया हो सकता है या आप सीधे लॉग-इन कर सकते हैं।";
+        $("authMessage").innerText = "✅ साइन-अप सफल! आप सीधे लॉग-इन (Sign In) कर सकते हैं।";
     }
 }
 
@@ -250,7 +249,6 @@ async function handleSignIn() {
     }
 }
 
-// वाहन बदलने पर पिछला रेंडर रिसेट करना
 function resetFareView() {
     $("submitBtn").style.display = "none";
     $("fareResult").innerHTML = "";
@@ -261,19 +259,30 @@ function calculateRealFare(distanceKM, vehicleType) {
     let baseFare = 0;
     let perKmRate = 0;
     let driverEarning = 0;
-    let platformFee = 15; // फ़िक्स प्लेटफॉर्म कमीशन
+    let platformFee = 15; 
 
     if (vehicleType === "bike") {
-        baseFare = 30;       // न्यूनतम किराया
-        perKmRate = 6;       // फ्यूल + मेंटेनेंस
-        driverEarning = 4;   // ड्राइवर की कमाई प्रति किमी
+        baseFare = 30;       
+        perKmRate = 6;       
+        driverEarning = 4;   
     } else { 
-        baseFare = 100;      // कार न्यूनतम किराया
-        perKmRate = 12;      // फ्यूल + कार मेंटेनेंस
-        driverEarning = 6;   // ड्राइवर की कमाई प्रति किमी
+        baseFare = 100;      
+        perKmRate = 12;      
+        driverEarning = 6;   
     }
 
     let total = baseFare + (distanceKM * (perKmRate + driverEarning)) + platformFee;
-    
-    // लॉन्ग रूट के लिए खाली वापसी बैकअप बोनस (10% extra)
-  
+    if (distanceKM > 20) {
+        total = total * 1.10;
+    }
+    return Math.round(total);
+}
+
+// ऑटोमैटिक रूट दूरी और किराया फेच करना (OSRM + Nominatim Open Data API)
+async function getRouteAndFare() {
+    const pickup = $("pickup").value.trim();
+    const dest = $("destination").value.trim();
+    const vehicle = $("vehicle").value;
+
+    if (!pickup || !dest) {
+      
