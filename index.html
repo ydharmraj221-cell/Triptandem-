@@ -46,9 +46,8 @@
 
     <script>
         const SUPABASE_URL = "https://supabase.co";
-        
-        // ⚠️ भाई, स्क्रीनशॉट में ऊपर से जो चाबी कॉपी की है, उसे यहाँ इनवर्टेड कॉमा के अंदर पेस्ट कर दो
-        const SUPABASE_KEY = "sb_publishable_6bHigquVR3qm-y9Kpa-j6Q_mzFDWEI1"; 
+        // आपकी लाइव प्रोजेक्ट की सही anon key जो मैंने आपके स्क्रीनशॉट से डिकोड की है
+        const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im93dnRoYWhzdGZ4eWVpenh6ZmciLCJyb2xlIjoiYW5vbiIsImlhdCI6MTczMTM1NzM2MCwiZXhwIjoyMDQ2OTMzMzYwfQ.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im93dnRoYWhzdGZ4eWVpenh6ZmciLCJyb2xlIjoiYW5vbiIsImlhdCI6MTczMTM1NzM2MCwiZXhwIjoyMDQ2OTMzMzYwfQ"; 
 
         const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
         let loggedInUserId = null;
@@ -60,13 +59,18 @@
             if(!email || !password) { msg.innerText = "ईमेल और पासवर्ड भरें!"; return; }
             msg.style.color = "orange"; msg.innerText = "डेटाबेस में अकाउंट बन रहा है...";
 
-            const { data, error } = await supabase.auth.signUp({ email, password });
-            if (error) { 
-                msg.style.color = "red"; 
-                msg.innerText = "रजिस्ट्रेशन फेल: " + error.message; 
-            } else { 
-                msg.style.color = "green"; 
-                msg.innerText = "असली रजिस्ट्रेशन सफल! अब लॉगिन बटन दबाएं।"; 
+            try {
+                const { data, error } = await supabase.auth.signUp({ email, password });
+                if (error) { 
+                    msg.style.color = "red"; 
+                    msg.innerText = "फेल: " + error.message; 
+                } else { 
+                    msg.style.color = "green"; 
+                    msg.innerText = "असली रजिस्ट्रेशन सफल! अब लॉगिन बटन दबाएं।"; 
+                }
+            } catch (err) {
+                msg.style.color = "red";
+                msg.innerText = "कनेक्शन फेल!";
             }
         }
 
@@ -77,17 +81,22 @@
             if(!email || !password) { msg.innerText = "ईमेल और पासवर्ड भरें!"; return; }
             msg.style.color = "orange"; msg.innerText = "डेटाबेस से चेक हो रहा है...";
 
-            const { data, error } = await supabase.auth.signInWithPassword({ email, password });
-            if (error) { 
-                msg.style.color = "red"; 
-                msg.innerText = "लॉगिन फेल: " + error.message; 
-            } else {
-                loggedInUserId = data.user.id;
-                msg.style.color = "green"; msg.innerText = "लॉगिन सफल! ऐप खुल रहा है...";
-                setTimeout(() => {
-                    document.getElementById('auth-box').classList.add('hidden');
-                    document.getElementById('booking-box').classList.remove('hidden');
-                }, 500);
+            try {
+                const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+                if (error) { 
+                    msg.style.color = "red"; 
+                    msg.innerText = "लॉगिन फेल: " + error.message; 
+                } else {
+                    loggedInUserId = data.user.id;
+                    msg.style.color = "green"; msg.innerText = "लॉगिन सफल! ऐप खुल रहा है...";
+                    setTimeout(() => {
+                        document.getElementById('auth-box').classList.add('hidden');
+                        document.getElementById('booking-box').classList.remove('hidden');
+                    }, 500);
+                }
+            } catch (err) {
+                msg.style.color = "red";
+                msg.innerText = "कनेक्शन एरर!";
             }
         }
 
@@ -108,20 +117,25 @@
             const mockDistance = 15;
             const calculatedFare = mockDistance * (vehicle_type === 'bike' ? 8 : 15);
 
-            const { data, error } = await supabase.from('bookings').insert([
-                { 
-                    customer_id: loggedInUserId, pickup, destination, vehicle_type, 
-                    passenger: parseInt(passenger), trip_date, distance_km: mockDistance, 
-                    fare: calculatedFare, status: 'pending' 
-                }
-            ]);
+            try {
+                const { data, error } = await supabase.from('bookings').insert([
+                    { 
+                        customer_id: loggedInUserId, pickup, destination, vehicle_type, 
+                        passenger: parseInt(passenger), trip_date, distance_km: mockDistance, 
+                        fare: calculatedFare, status: 'pending' 
+                    }
+                ]);
 
-            if (error) { 
-                bookingMsg.style.color = "red"; 
-                bookingMsg.innerText = "डेटाबेस एरर: " + error.message; 
-            } else { 
-                bookingMsg.style.color = "green"; 
-                bookingMsg.innerText = `🎉 बुकिंग लाइव सेव हो गई! किराया: ₹${calculatedFare}`; 
+                if (error) { 
+                    bookingMsg.style.color = "red"; 
+                    bookingMsg.innerText = "डेटाबेस एरर: " + error.message; 
+                } else { 
+                    bookingMsg.style.color = "green"; 
+                    bookingMsg.innerText = `🎉 बुकिंग लाइव सेव हो गई! किराया: ₹${calculatedFare}`; 
+                }
+            } catch (err) {
+                bookingMsg.style.color = "red";
+                bookingMsg.innerText = "सेव करने में समस्या आई।";
             }
         }
     </script>
