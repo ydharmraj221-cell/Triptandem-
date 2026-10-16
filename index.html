@@ -1,242 +1,113 @@
 <!DOCTYPE html>
 <html lang="hi">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>IndicRide | Global Travel, Indian Soul</title>
-<!-- Supabase Client Library CDN -->
-<script src="https://jsdelivr.net"></script>
-<style>
-*{box-sizing:border-box}
-body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;background:#f8fafc;color:#0f172a}
-header{background:#0f172a;color:white;padding:20px;border-bottom:3px solid #f97316}
-nav{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
-.logo{font-size:26px;font-weight:900;color:#f97316;letter-spacing:1px}
-.logo span{color:#ffffff}
-nav a{color:#94a3b8;text-decoration:none;margin:5px;font-weight:600;transition:0.3s}
-nav a:hover{color:#f97316}
-.hero{padding:60px 20px;text-align:center;background:linear-gradient(135deg, #0f172a 0%, #1e293b 100%);color:white}
-.hero h1{font-size:38px;margin:5px;font-weight:800;letter-spacing:-0.5px}
-.hero p{color:#94a3b8;line-height:1.6;font-size:18px}
-.btn-primary{background:#f97316;color:white;border:0;font-weight:bold;cursor:pointer;margin-top:14px;transition:0.3s;box-shadow:0 4px 14px rgba(249, 115, 22, 0.4)}
-.btn-primary:hover{background:#ea580c;transform:translateY(-1px)}
-main{max-width:850px;margin:auto;padding:18px}
-.card{background:white;border-radius:20px;padding:25px;margin:20px 0;box-shadow:0 10px 30px rgba(15, 23, 42, 0.04);border:1px solid #e2e8f0}
-label{display:block;font-weight:700;margin:16px 0 6px;font-size:14px;text-transform:uppercase;color:#475569;letter-spacing:0.5px}
-input,select,button{width:100%;padding:14px;border-radius:12px;border:1px solid #cbd5e1;font-size:16px;background:#ffffff;color:#0f172a}
-input:focus,select:focus{outline:none;border-color:#f97316;box-shadow:0 0 0 3px rgba(249, 115, 22, 0.1)}
-.grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
-.price{font-size:36px;font-weight:800;color:#10b981;margin-top:10px;letter-spacing:-1px}
-.small{font-size:13px;color:#64748b;line-height:1.5;margin-top:8px}
-.status-badge{display:inline-block;padding:6px 12px;border-radius:8px;font-size:12px;font-weight:bold}
-.status-pending{background:#ffedd5;color:#ea580c}
-.status-confirmed{background:#d1fae5;color:#065f46}
-footer{text-align:center;padding:35px;background:#0f172a;color:white;margin-top:40px;border-top:1px solid #1e293b}
-.hidden{display:none !important}
-@media(max-width:520px){.grid{grid-template-columns:1fr}.hero h1{font-size:30px}}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ROAMRIDER</title>
+    <script src="https://jsdelivr.net"></script>
+    <style>
+        body { font-family: Arial, sans-serif; background: #f4f4f9; padding: 20px; text-align: center; }
+        .box { max-width: 400px; margin: 30px auto; background: white; padding: 25px; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        input, select, button { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ccc; border-radius: 5px; box-sizing: border-box; }
+        button { background: #28a745; color: white; font-weight: bold; border: none; cursor: pointer; }
+        .hidden { display: none; }
+        #msg, #booking-msg { font-weight: bold; margin-top: 10px; }
+    </style>
 </head>
 <body>
 
-<header>
-<nav>
-<div class="logo">🇮🇳 Indic<span>Ride</span></div>
-<div>
-<a href="#book">Book Ride</a>
-<a href="#services">Services</a>
-<a href="#orders">My Trips</a>
-<span id="userStatus" style="color:#f97316; margin-left:10px; font-weight:bold;"></span>
-</div>
-</nav>
-</header>
+    <h1>🏍️ ROAMRIDER (TripTandem) 🚗</h1>
 
-<section class="hero">
-<h1 id="heroTitle">Next-Gen Mobility For India</h1>
-<p id="heroText">Explore locally, connect globally. Choose your way.</p>
-<button class="btn-primary" onclick="document.getElementById('book').scrollIntoView({behavior:'smooth'})" style="width:auto; padding:14px 28px;">
-Start Your Journey
-</button>
-</section>
+    <!-- LOGIN / REGISTER SCREEN -->
+    <div id="auth-box" class="box">
+        <h3>अकाउंट लॉगिन / रजिस्टर</h3>
+        <input type="email" id="email" placeholder="ईमेल आईडी डालें" required>
+        <input type="password" id="password" placeholder="पासवर्ड डालें" required>
+        <button onclick="handleSignUp()" style="background: #007bff;">नया अकाउंट बनाएं (Register)</button>
+        <button onclick="handleLogin()">लॉगिन करें (Login)</button>
+        <p id="msg" style="color: red;"></p>
+    </div>
 
-<main>
-<!-- भाषा चयन -->
-<section class="card">
-<label for="language">Global Settings / भाषा</label>
-<select id="language" onchange="changeLanguage()">
-<option value="en">English (Global)</option>
-<option value="hi">हिंदी (Hindi)</option>
-</select>
-</section>
+    <!-- BOOKING SCREEN -->
+    <div id="booking-box" class="box hidden">
+        <h3 style="color: #28a745;">👋 राइड बुक करें</h3>
+        <input type="text" id="pickup" placeholder="पिकअप लोकेशन (Pickup)">
+        <input type="text" id="destination" placeholder="ड्रॉप लोकेशन (Destination)">
+        
+        <select id="vehicle_type">
+            <option value="bike">🏍️ बाइक (₹8/किमी)</option>
+            <option value="car">🚗 कार (₹15/किमी)</option>
+        </select>
+        <input type="number" id="passenger" placeholder="यात्रियों की संख्या" min="1" max="4" value="1">
+        <input type="date" id="trip_date">
+        <button onclick="confirmBooking()">🚀 बुकिंग कन्फर्म करें</button>
+        <p id="booking-msg"></p>
+    </div>
 
-<!-- नया OTP Auth सेक्शन -->
-<section class="card" id="authSection">
-<h2 id="authTitle">Secure One-Click Login</h2>
-<p class="small">Enter your email to receive a secure login OTP code instantly.</p>
-<div>
-    <label for="authEmail">Email Address</label>
-    <input type="email" id="authEmail" placeholder="name@domain.com">
-    <button type="button" id="sendOtpBtn" onclick="handleSendOTP()" class="btn-primary">1. Send OTP Code</button>
-</div>
+    <script>
+        const SUPABASE_URL = "https://supabase.co";
+        // आपकी रिफ्रेन्स आईडी से ऑटो-लिंक्ड की
+        const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im93dnRoYWhzdGZ4eWVpenh6ZmciLCJyb2xlIjoiYW5vbiIsImlhdCI6MTczMTM1NzM2MCwiZXhwIjoyMDQ2OTMzMzYwfQ.YOUR_KEY_REST_PART";
 
-<div id="otpVerifyBlock" class="hidden" style="margin-top: 15px;">
-    <label for="authOtp">Enter 6-Digit OTP</label>
-    <input type="text" id="authOtp" placeholder="123456" inputmode="numeric" pattern="[0-9]{6}">
-    <button type="button" onclick="handleVerifyOTP()" style="background:#10b981; color:white; margin-top:10px;">2. Verify & Login</button>
-</div>
-<div id="authMessage" class="small" style="font-weight:bold; color:#ef4444; margin-top:10px;"></div>
-</section>
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+        let loggedInUserId = null;
 
-<!-- सेवाएँ -->
-<section class="card" id="services">
-<h2 id="serviceTitle">Premium Mobility Services</h2>
-<div class="grid">
-<div><h3 style="color:#f97316;">🚗 Auto Cruiser</h3><p>Premium cars for intercity and family travel.</p></div>
-<div><h3 style="color:#f97316;">🏍️ Moto Rapid</h3><p>Fast local bike transits with pro riders.</p></div>
-<div><h3 style="color:#f97316;">🏛️ Heritage Tours</h3><p>Curated smart sightseeing to historical spots.</p></div>
-<div><h3 style="color:#f97316;">💰 Smart Pricing</h3><p>Transparent real-time algorithmic fare mapping.</p></div>
-</div>
-</section>
+        async function handleSignUp() {
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const msg = document.getElementById('msg');
+            msg.style.color = "orange"; msg.innerText = "प्रोसेसिंग...";
 
-<!-- मुख्य बुकिंग फॉर्म -->
-<section class="card" id="book">
-<h2 id="bookingTitle">Ride Configurator (Customer)</h2>
-<form id="bookingForm" onsubmit="handleBookingSubmit(event)">
+            const { data, error } = await supabase.auth.signUp({ email, password });
+            if (error) { msg.style.color = "red"; msg.innerText = error.message; }
+            else { msg.style.color = "green"; msg.innerText = "रजिस्टर सफल! अब लॉगिन बटन दबाएं।"; }
+        }
 
-<div class="grid">
-  <div>
-    <label for="pickup">Origin / Pickup Point</label>
-    <input id="pickup" required placeholder="e.g. Chitrakoot Railway Station">
-  </div>
-  <div>
-    <label for="destination">Terminal / Destination</label>
-    <input id="destination" required placeholder="e.g. Ramghat Chitrakoot">
-  </div>
-</div>
+        async function handleLogin() {
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const msg = document.getElementById('msg');
+            msg.style.color = "orange"; msg.innerText = "लॉगिन हो रहा है...";
 
-<div class="grid">
-<div>
-<label for="vehicle">Fleet Class</label>
-<select id="vehicle" onchange="resetFareView()">
-<option value="bike">🏍️ Moto Rapid (Bike)</option>
-<option value="car">🚗 Auto Cruiser (Car)</option>
-</select>
-</div>
-<div>
-<label for="people">Manifest / Passengers</label>
-<select id="people">
-<option value="1">1 Passenger</option>
-<option value="2">2 Passengers</option>
-<option value="3">3 Passengers</option>
-<option value="4">4 Passengers</option>
-<option value="5">5 Passengers</option>
-</select>
-</div>
-</div>
+            const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+            if (error) { msg.style.color = "red"; msg.innerText = error.message; }
+            else {
+                loggedInUserId = data.user.id;
+                msg.style.color = "green"; msg.innerText = "सफल! पेज खुल रहा है...";
+                setTimeout(() => {
+                    document.getElementById('auth-box').classList.add('hidden');
+                    document.getElementById('booking-box').classList.remove('hidden');
+                }, 800);
+            }
+        }
 
-<div class="grid">
-  <div>
-    <label for="tripDate">Schedule Date</label>
-    <input type="date" id="tripDate" required>
-  </div>
-  <div>
-    <label for="passengerName">Full Name</label>
-    <input type="text" id="passengerName" required placeholder="Enter pass name">
-  </div>
-</div>
+        async function confirmBooking() {
+            const pickup = document.getElementById('pickup').value;
+            const destination = document.getElementById('destination').value;
+            const vehicle_type = document.getElementById('vehicle_type').value;
+            const passenger = document.getElementById('passenger').value;
+            const trip_date = document.getElementById('trip_date').value;
+            const bookingMsg = document.getElementById('booking-msg');
 
-<div class="grid" style="margin-top: 20px; background: #f1f5f9; padding: 16px; border-radius: 12px; border: 1px solid #e2e8f0;">
-  <div>
-    <strong style="color:#475569;">🚗 Telemetry Distance:</strong> <span id="routeDistance" style="font-weight:bold; color:#0f172a;">00</span> km
-  </div>
-  <div>
-    <strong>⏱️ Est. Transit Time:</strong> <span id="routeTime" style="font-weight:bold; color:#0f172a;">00</span> mins
-  </div>
-</div>
+            if(!pickup || !destination || !trip_date) {
+                bookingMsg.style.color = "red"; bookingMsg.innerText = "पूरी जानकारी भरें!"; return;
+            }
 
-<button type="button" onclick="getRouteAndFare()" style="background:#0f172a; color:white; margin-top:15px;">1. Calculate Algorithmic Fare</button>
+            bookingMsg.style.color = "orange"; bookingMsg.innerText = "बुकिंग सेव हो रही है...";
+            const mockDistance = 15;
+            const calculatedFare = mockDistance * (vehicle_type === 'bike' ? 8 : 15);
 
-<div id="fareResult" aria-live="polite"></div>
+            const { data, error } = await supabase.from('bookings').insert([
+                { 
+                    customer_id: loggedInUserId, pickup, destination, vehicle_type, 
+                    passenger: parseInt(passenger), trip_date, distance_km: mockDistance, 
+                    fare: calculatedFare, status: 'pending' 
+                }
+            ]);
 
-<button type="submit" id="submitBtn" class="btn-primary" style="display:none; margin-top:20px;">2. Dispatch Ride Request</button>
-<p class="small">Smart fare engine accounts for road distance, vehicle tier, rider compensation, and a minimal ₹15 network maintenance fee.</p>
-</form>
-</section>
-
-<!-- मेरी ट्रिप्स -->
-<section class="card" id="orders">
-<h2>Active Itineraries / Cloud Records</h2>
-<div id="bookingList">Please authenticate to fetch cloud instances.</div>
-<button onclick="fetchCloudBookings()" style="background:#0f172a; color:white; margin-top:10px; border-radius:8px; padding:10px;">Sync Live Cloud</button>
-</section>
-
-<!-- राइडर / ड्राइवर पैनल सेक्शन -->
-<section class="card" id="riderSection" style="background: #0f172a; color: white; border: 1px solid #1e293b;">
-<h2 style="color: #f97316;">📡 Global Node Panel (Rider Console)</h2>
-<p class="small" style="color: #94a3b8;">Real-time global routing mesh displaying unassigned local requests.</p>
-
-<div id="availableRidesList" style="color: #0f172a; background: #f8fafc; padding: 18px; border-radius: 12px; margin-top: 15px;">
-    Authenticate console node to unlock radar streams.
-</div>
-
-<button onclick="fetchAllAvailableRides()" class="btn-primary" style="background:#f97316; color:white; margin-top:15px;">
-🔄 Ping Radar for Rides
-</button>
-</section>
-
-</main>
-
-<footer>
-<strong>🇮🇳 IndicRide Global Mobility</strong>
-<p>Architected for frictionless transit. Scaled globally, served locally.</p>
-<p>© 2026 IndicRide Tech Inc.</p>
-</footer>
-
-<script>
-const $ = id => document.getElementById(id);
-
-const SUPABASE_URL = "https://supabase.co";
-const SUPABASE_KEY = "sb_publishable_6bHigquVR3qm-y9Kpa-j6Q_mzFDWEI1"; 
-
-const supabase = typeof createClient !== 'undefined' ? createClient(SUPABASE_URL, SUPABASE_KEY) : null;
-
-let calculatedDistanceKM = 0;
-let calculatedDurationMin = 0;
-let finalEstimatedFare = 0;
-let currentUser = null;
-
-window.onload = function() {
-    const today = new Date().toISOString().split('T');
-    $("tripDate").setAttribute('min', today);
-    if(supabase) { checkUserSession(); }
-};
-
-async function checkUserSession() {
-    const { data } = await supabase.auth.getSession();
-    if (data.session) {
-        currentUser = data.session.user;
-        $("userStatus").innerText = `👤 ${currentUser.email.split('@')[0]}`;
-        $("authSection").classList.add("hidden");
-        fetchCloudBookings();
-        fetchAllAvailableRides();
-    } else {
-        currentUser = null;
-        $("userStatus").innerText = "";
-        $("authSection").classList.remove("hidden");
-    }
-}
-
-// 📩 ईमेल पर ओटीपी भेजने का फंक्शन
-async function handleSendOTP() {
-    const email = $("authEmail").value.trim();
-    if(!email) { alert("कृपया ईमेल दर्ज करें"); return; }
-    
-    $("authMessage").style.color = "#0f172a";
-    $("authMessage").innerText = "🔄 ओटीपी कोड भेजा जा रहा है, ईमेल चेक करें...";
-    
-    const { data, error } = await supabase.auth.signInWithOtp({
-        email: email
-    });
-    
-    if(error) {
-        $("authMessage").style.color = "#ef4444";
-      
+            if (error) { bookingMsg.style.color = "red"; bookingMsg.innerText = error.message; }
+            else { bookingMsg.style.color = "green"; bookingMsg.innerText = `🎉 बुकिंग सफल! किराया: ₹${calculatedFare}`; }
+        }
+    </script>
+</body>
+</html>
