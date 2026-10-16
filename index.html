@@ -67,8 +67,8 @@ footer{text-align:center;padding:25px;background:#101b35;color:white}
 
 <!-- Supabase Auth (लॉग-इन / साइन-अप) सेक्शन -->
 <section class="card" id="authSection">
-<h2 id="authTitle">यात्री अकाउंट (लॉग-इन / साइन-अप)</h2>
-<p class="small">सुरक्षित बुकिंग क्लाउड में सेव करने के लिए लॉग-इन करना ज़रूरी है।</p>
+<h2 id="authTitle">यात्री / ड्राइवर अकाउंट (लॉग-इन / साइन-अप)</h2>
+<p class="small">सुरक्षित बुकिंग और ड्राइवर पैनल इस्तेमाल करने के लिए लॉग-इन अनिवार्य है।</p>
 <div class="grid">
   <div>
     <label for="authEmail">ईमेल आईडी / Email</label>
@@ -97,9 +97,9 @@ footer{text-align:center;padding:25px;background:#101b35;color:white}
 </div>
 </section>
 
-<!-- मुख्य बुकिंग फॉर्म -->
-<section class="card id-disabled" id="book">
-<h2 id="bookingTitle">अपनी ट्रिप प्लान करें</h2>
+<!-- मुख्य बुकिंग फॉर्म (यात्री के लिए) -->
+<section class="card" id="book">
+<h2 id="bookingTitle">अपनी ट्रिप प्लान करें (कस्टमर बुकिंग)</h2>
 <form id="bookingForm" onsubmit="handleBookingSubmit(event)">
 
 <div class="grid">
@@ -139,7 +139,7 @@ footer{text-align:center;padding:25px;background:#101b35;color:white}
     <input type="date" id="tripDate" required>
   </div>
   <div>
-    <label for="passengerName">यात्री का नाम</label>
+    <label for="passengerName">यात्री का नाम / Name</label>
     <input type="text" id="passengerName" required placeholder="नाम लिखें">
   </div>
 </div>
@@ -159,16 +159,31 @@ footer{text-align:center;padding:25px;background:#101b35;color:white}
 <div id="fareResult" aria-live="polite"></div>
 
 <button type="submit" id="submitBtn" style="background:#117a52; color:white; display:none; margin-top:20px;">2. बुकिंग रिक्वेस्ट सेव करें (Confirm Booking)</button>
-<p class="small">नोट: किराया वास्तविक रोड दूरी, न्यूनतम चार्ज, ड्राइवर अर्निंग और ₹15 प्लेटफॉर्म फीस को जोड़कर पारदर्शी रूप से बनाया गया है।</p>
+<p class="small">नोट: किराया वास्तविक रोड दूरी, न्यूनतम चार्ज, ड्राइवर कमाई और ₹15 प्लेटफॉर्म फीस को जोड़कर पारदर्शी रूप से बनाया गया है।</p>
 </form>
 </section>
 
-<!-- मेरी ट्रिप्स -->
+<!-- मेरी ट्रिप्स (यात्री का रिकॉर्ड) -->
 <section class="card" id="orders">
-<h2>मेरी लाइव ट्रिप्स / Cloud Records</h2>
+<h2>मेरी लाइव ट्रिप्स / Cloud Records (Customer View)</h2>
 <div id="bookingList">बुकिंग लिस्ट देखने के लिए कृपया पहले लॉग-इन करें।</div>
 <button onclick="fetchCloudBookings()" style="background:#101b35; color:white; margin-top:10px;">रिफ्रेश लिस्ट (Sync Cloud)</button>
 </section>
+
+<!-- राइडर / ड्राइवर पैनल सेक्शन -->
+<section class="card" id="riderSection" style="background: #111c36; color: white;">
+<h2 style="color: #f7bd35;">🏍️ राइडर / ड्राइवर पैनल (Rider Dashboard)</h2>
+<p class="small" style="color: #a0aec0;">यहाँ आस-पास की सभी नई लाइव बुकिंग रिक्वेस्ट दिखाई देंगी।</p>
+
+<div id="availableRidesList" style="color: #172033; background: white; padding: 15px; border-radius: 8px; margin-top: 10px;">
+    लॉग-इन करने के बाद उपलब्ध राइड्स देखने के लिए नीचे बटन दबाएं।
+</div>
+
+<button onclick="fetchAllAvailableRides()" style="background:#f7bd35; color:#101b35; margin-top:15px;">
+🔄 नई राइड्स खोजें (Find Available Rides)
+</button>
+</section>
+
 </main>
 
 <footer>
@@ -180,11 +195,10 @@ footer{text-align:center;padding:25px;background:#101b35;color:white}
 <script>
 const $ = id => document.getElementById(id);
 
-// आपकी असली Supabase URL और चाबी यहाँ सेट कर दी गई है
+// आपकी असली Supabase URL और चाबी यहाँ सेट है
 const SUPABASE_URL = "https://supabase.co";
 const SUPABASE_KEY = "sb_publishable_6bHigquVR3qm-y9Kpa-j6Q_mzFDWEI1"; 
 
-// Supabase क्लाइंट चालू करना
 const supabase = typeof createClient !== 'undefined' ? createClient(SUPABASE_URL, SUPABASE_KEY) : null;
 
 let calculatedDistanceKM = 0;
@@ -192,16 +206,10 @@ let calculatedDurationMin = 0;
 let finalEstimatedFare = 0;
 let currentUser = null;
 
-// पेज लोड होने पर यूजर की स्थिति चेक करना
 window.onload = function() {
-    const today = new Date().toISOString().split('T')[0];
+    const today = new Date().toISOString().split('T');
     $("tripDate").setAttribute('min', today);
-    
-    if(supabase) {
-        checkUserSession();
-    } else {
-        alert("Supabase कनेक्ट नहीं हो पाया। कृपया इंटरनेट या CDN स्क्रिप्ट चेक करें।");
-    }
+    if(supabase) { checkUserSession(); }
 };
 
 async function checkUserSession() {
@@ -211,6 +219,7 @@ async function checkUserSession() {
         $("userStatus").innerText = `👤 ${currentUser.email.split('@')[0]}`;
         $("authSection").classList.add("hidden");
         fetchCloudBookings();
+        fetchAllAvailableRides();
     } else {
         currentUser = null;
         $("userStatus").innerText = "";
@@ -218,35 +227,24 @@ async function checkUserSession() {
     }
 }
 
-// नया अकाउंट बनाने का फंक्शन
 async function handleSignUp() {
     const email = $("authEmail").value.trim();
     const password = $("authPassword").value.trim();
     if(!email || !password) { alert("ईमेल और पासवर्ड भरें"); return; }
-    
     $("authMessage").innerText = "🔄 अकाउंट बनाया जा रहा है...";
     const { data, error } = await supabase.auth.signUp({ email, password });
-    if(error) {
-        $("authMessage").innerText = `❌ ${error.message}`;
-    } else {
-        $("authMessage").innerText = "✅ साइन-अप सफल! आप सीधे लॉग-इन (Sign In) कर सकते हैं।";
-    }
+    if(error) { $("authMessage").innerText = `❌ ${error.message}`; } 
+    else { $("authMessage").innerText = "✅ साइन-अप सफल! आप सीधे लॉग-इन (Sign In) कर सकते हैं।"; }
 }
 
-// लॉग-इन करने का फंक्शन
 async function handleSignIn() {
     const email = $("authEmail").value.trim();
     const password = $("authPassword").value.trim();
     if(!email || !password) { alert("ईमेल और पासवर्ड भरें"); return; }
-    
     $("authMessage").innerText = "🔄 लॉग-इन हो रहा है...";
     const { data, error } = await supabase.auth.signInWithPassword({ email, password });
-    if(error) {
-        $("authMessage").innerText = `❌ ${error.message}`;
-    } else {
-        $("authMessage").innerText = "";
-        checkUserSession();
-    }
+    if(error) { $("authMessage").innerText = `❌ ${error.message}`; } 
+    else { $("authMessage").innerText = ""; checkUserSession(); }
 }
 
 function resetFareView() {
@@ -254,35 +252,16 @@ function resetFareView() {
     $("fareResult").innerHTML = "";
 }
 
-// वास्तविक किराया फॉर्मूला गणना (Real Fare Logic)
 function calculateRealFare(distanceKM, vehicleType) {
-    let baseFare = 0;
-    let perKmRate = 0;
-    let driverEarning = 0;
+    let baseFare = vehicleType === "bike" ? 30 : 100;
+    let perKmRate = vehicleType === "bike" ? 6 : 12;
+    let driverEarning = vehicleType === "bike" ? 4 : 6;
     let platformFee = 15; 
 
-    if (vehicleType === "bike") {
-        baseFare = 30;       
-        perKmRate = 6;       
-        driverEarning = 4;   
-    } else { 
-        baseFare = 100;      
-        perKmRate = 12;      
-        driverEarning = 6;   
-    }
-
     let total = baseFare + (distanceKM * (perKmRate + driverEarning)) + platformFee;
-    if (distanceKM > 20) {
-        total = total * 1.10;
-    }
+    if (distanceKM > 20) { total = total * 1.10; }
     return Math.round(total);
 }
 
-// ऑटोमैटिक रूट दूरी और किराया फेच करना (OSRM + Nominatim Open Data API)
 async function getRouteAndFare() {
-    const pickup = $("pickup").value.trim();
-    const dest = $("destination").value.trim();
-    const vehicle = $("vehicle").value;
-
-    if (!pickup || !dest) {
-      
+  
