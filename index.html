@@ -68,25 +68,22 @@ Start Your Journey
 </select>
 </section>
 
-<!-- Supabase Auth (लॉग-इन / साइन-अप) सेक्शन -->
+<!-- नया OTP Auth सेक्शन -->
 <section class="card" id="authSection">
-<h2 id="authTitle">Secure Gateway (Login / Signup)</h2>
-<p class="small">Access next-gen decentralized cloud booking system.</p>
-<div class="grid">
-  <div>
+<h2 id="authTitle">Secure One-Click Login</h2>
+<p class="small">Enter your email to receive a secure login OTP code instantly.</p>
+<div>
     <label for="authEmail">Email Address</label>
     <input type="email" id="authEmail" placeholder="name@domain.com">
-  </div>
-  <div>
-    <label for="authPassword">Password</label>
-    <input type="password" id="authPassword" placeholder="******">
-  </div>
+    <button type="button" id="sendOtpBtn" onclick="handleSendOTP()" class="btn-primary">1. Send OTP Code</button>
 </div>
-<div class="grid" style="margin-top:15px;">
-  <button type="button" onclick="handleSignUp()" style="background:#f1f5f9; color:#0f172a; border:1px solid #cbd5e1;">Create Account</button>
-  <button type="button" onclick="handleSignIn()" class="btn-primary" style="margin-top:0;">Secure Sign In</button>
+
+<div id="otpVerifyBlock" class="hidden" style="margin-top: 15px;">
+    <label for="authOtp">Enter 6-Digit OTP</label>
+    <input type="text" id="authOtp" placeholder="123456" inputmode="numeric" pattern="[0-9]{6}">
+    <button type="button" onclick="handleVerifyOTP()" style="background:#10b981; color:white; margin-top:10px;">2. Verify & Login</button>
 </div>
-<div id="authMessage" class="small" style="font-weight:bold; color:#ef4444;"></div>
+<div id="authMessage" class="small" style="font-weight:bold; color:#ef4444; margin-top:10px;"></div>
 </section>
 
 <!-- सेवाएँ -->
@@ -147,7 +144,6 @@ Start Your Journey
   </div>
 </div>
 
-<!-- एडवांस्ड टेलीमेट्री डिस्प्ले ग्रिड -->
 <div class="grid" style="margin-top: 20px; background: #f1f5f9; padding: 16px; border-radius: 12px; border: 1px solid #e2e8f0;">
   <div>
     <strong style="color:#475569;">🚗 Telemetry Distance:</strong> <span id="routeDistance" style="font-weight:bold; color:#0f172a;">00</span> km
@@ -218,7 +214,7 @@ async function checkUserSession() {
     const { data } = await supabase.auth.getSession();
     if (data.session) {
         currentUser = data.session.user;
-        $("userStatus").innerText = `👤 ${currentUser.email.split('@')}`;
+        $("userStatus").innerText = `👤 ${currentUser.email.split('@')[0]}`;
         $("authSection").classList.add("hidden");
         fetchCloudBookings();
         fetchAllAvailableRides();
@@ -229,11 +225,18 @@ async function checkUserSession() {
     }
 }
 
-async function handleSignUp() {
+// 📩 ईमेल पर ओटीपी भेजने का फंक्शन
+async function handleSendOTP() {
     const email = $("authEmail").value.trim();
-    const password = $("authPassword").value.trim();
-    if(!email || !password) { alert("Fill all fields"); return; }
-    $("authMessage").innerText = "🔄 Deploying account node...";
-    const { data, error } = await supabase.auth.signUp({ email, password });
-    if(error) { $("authMessage").innerText = `❌ ${error.message}`; } 
-  
+    if(!email) { alert("कृपया ईमेल दर्ज करें"); return; }
+    
+    $("authMessage").style.color = "#0f172a";
+    $("authMessage").innerText = "🔄 ओटीपी कोड भेजा जा रहा है, ईमेल चेक करें...";
+    
+    const { data, error } = await supabase.auth.signInWithOtp({
+        email: email
+    });
+    
+    if(error) {
+        $("authMessage").style.color = "#ef4444";
+      
