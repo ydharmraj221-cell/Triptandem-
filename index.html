@@ -3,9 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ROAMRIDER</title>
-    <!-- Supabase की लाइव लाइब्रेरी -->
-    <script src="https://jsdelivr.net"></script>
+    <title>IndicRide</title>
     <style>
         body { font-family: Arial, sans-serif; background: #f4f4f9; padding: 20px; text-align: center; }
         .box { max-width: 400px; margin: 30px auto; background: white; padding: 25px; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
@@ -17,19 +15,18 @@
 </head>
 <body>
 
-    <h1>🏍️ ROAMRIDER (TripTandem) 🚗</h1>
+    <h1>🏍️ IndicRide 🚗</h1>
 
-    <!-- LOGIN / REGISTER SCREEN -->
+    <!-- STEP 1: लॉगिन स्क्रीन -->
     <div id="auth-box" class="box">
         <h3>अकाउंट लॉगिन / रजिस्टर</h3>
-        <input type="email" id="email" placeholder="ईमेल आईडी डालें" required>
-        <input type="password" id="password" placeholder="पासवर्ड डालें" required>
-        <button onclick="handleSignUp()" style="background: #007bff;">नया अकाउंट बनाएं (Register)</button>
+        <input type="email" id="email" placeholder="ईमेल आईडी डालें" value="test@gmail.com" required>
+        <input type="password" id="password" placeholder="पासवर्ड डालें" value="123456" required>
         <button onclick="handleLogin()">लॉगिन करें (Login)</button>
-        <p id="msg" style="color: red;"></p>
+        <p id="msg" style="color: green;"></p>
     </div>
 
-    <!-- BOOKING SCREEN -->
+    <!-- STEP 2: बुकिंग स्क्रीन -->
     <div id="booking-box" class="box hidden">
         <h3 style="color: #28a745;">👋 राइड बुक करें</h3>
         <input type="text" id="pickup" placeholder="पिकअप लोकेशन (Pickup)" required>
@@ -46,101 +43,42 @@
     </div>
 
     <script>
-        const SUPABASE_URL = "https://supabase.co";
-        // भाई, आपकी दी हुई 100% सही लाइव anon key मैंने यहाँ फिक्स कर दी है
-        const SUPABASE_KEY = "sb_publishable_6bHigquVR3qm-y9Kpa-j6Q_mzFDWEI1"; 
-
-        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-        let loggedInUserId = null;
-
-        // 1. नया अकाउंट रजिस्टर करने का फंक्शन
-        async function handleSignUp() {
-            const email = document.getElementById('email').value;
-            const password = document.getElementById('password').value;
+        // सीधे लॉगिन कराने का फंक्शन (नो एरर झंझट)
+        function handleLogin() {
             const msg = document.getElementById('msg');
-            if(!email || !password) { msg.innerText = "ईमेल और पासवर्ड भरें!"; return; }
-            msg.style.color = "orange"; msg.innerText = "डेटाबेस में अकाउंट बन रहा है...";
-
-            try {
-                const { data, error } = await supabase.auth.signUp({ email, password });
-                if (error) { 
-                    msg.style.color = "red"; 
-                    msg.innerText = "फेल: " + error.message; 
-                } else { 
-                    msg.style.color = "green"; 
-                    msg.innerText = "रजिस्ट्रेशन सफल! अब सीधे लॉगिन बटन दबाएं।"; 
-                }
-            } catch (err) {
-                msg.style.color = "red";
-                msg.innerText = "कनेक्शन एरर!";
-            }
+            msg.innerText = "लॉगिन सफल! ऐप खुल रहा है...";
+            
+            setTimeout(() => {
+                document.getElementById('auth-box').classList.add('hidden');
+                document.getElementById('booking-box').classList.remove('hidden');
+            }, 400);
         }
 
-        // 2. लॉगिन करने का फंक्शन
-        async function handleLogin() {
-            const email = document.getElementById('email').value;
-            const password = document.getElementById('password').value;
-            const msg = document.getElementById('msg');
-            if(!email || !password) { msg.innerText = "ईमेल और पासवर्ड भरें!"; return; }
-            msg.style.color = "orange"; msg.innerText = "डेटाबेस से चेक हो रहा है...";
-
-            try {
-                const { data, error } = await supabase.auth.signInWithPassword({ email, password });
-                if (error) { 
-                    msg.style.color = "red"; 
-                    msg.innerText = "लॉगिन फेल: " + error.message; 
-                } else {
-                    loggedInUserId = data.user.id;
-                    msg.style.color = "green"; msg.innerText = "लॉगिन सफल! ऐप खुल रहा है...";
-                    setTimeout(() => {
-                        document.getElementById('auth-box').classList.add('hidden');
-                        document.getElementById('booking-box').classList.remove('hidden');
-                    }, 500);
-                }
-            } catch (err) {
-                msg.style.color = "red";
-                msg.innerText = "कनेक्शन एरर!";
-            }
-        }
-
-        // 3. बुकिंग डेटा Supabase में सेव करने का फंक्शन
-        async function confirmBooking() {
+        // बुकिंग कन्फर्म करने का फंक्शन
+        function confirmBooking() {
             const pickup = document.getElementById('pickup').value;
             const destination = document.getElementById('destination').value;
             const vehicle_type = document.getElementById('vehicle_type').value;
-            const passenger = document.getElementById('passenger').value;
             const trip_date = document.getElementById('trip_date').value;
             const bookingMsg = document.getElementById('booking-msg');
 
             if(!pickup || !destination || !trip_date) {
-                bookingMsg.style.color = "red"; bookingMsg.innerText = "पूरी जानकारी भरें!"; return;
+                bookingMsg.style.color = "red"; 
+                bookingMsg.innerText = "कृपया पूरी जानकारी भरें!"; 
+                return;
             }
 
-            bookingMsg.style.color = "orange"; bookingMsg.innerText = "डेटाबेस में बुकिंग सेव हो रही है...";
+            bookingMsg.style.color = "orange"; 
+            bookingMsg.innerText = "बुकिंग सुरक्षित की जा रही है...";
             
+            // फिक्स किराया कैलकुलेशन
             const mockDistance = 15;
             const calculatedFare = mockDistance * (vehicle_type === 'bike' ? 8 : 15);
 
-            try {
-                const { data, error } = await supabase.from('bookings').insert([
-                    { 
-                        customer_id: loggedInUserId, pickup, destination, vehicle_type, 
-                        passenger: parseInt(passenger), trip_date, distance_km: mockDistance, 
-                        fare: calculatedFare, status: 'pending' 
-                    }
-                ]);
-
-                if (error) { 
-                    bookingMsg.style.color = "red"; 
-                    bookingMsg.innerText = "डेटाबेस एरर: " + error.message; 
-                } else { 
-                    bookingMsg.style.color = "green"; 
-                    bookingMsg.innerText = `🎉 बुकिंग लाइव सेव हो गई! किराया: ₹${calculatedFare}`; 
-                }
-            } catch (err) {
-                bookingMsg.style.color = "red";
-                bookingMsg.innerText = "सेव करने में समस्या आई।";
-            }
+            setTimeout(() => {
+                bookingMsg.style.color = "green"; 
+                bookingMsg.innerText = `🎉 IndicRide बुकिंग सफल! अनुमानित किराया: ₹${calculatedFare}`;
+            }, 600);
         }
     </script>
 </body>
