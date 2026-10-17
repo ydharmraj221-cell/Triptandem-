@@ -6,52 +6,106 @@
     <title>IndicRide</title>
     <style>
         body { font-family: Arial, sans-serif; background: #f4f4f9; padding: 20px; text-align: center; }
-        .box { max-width: 400px; margin: 30px auto; background: white; padding: 25px; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        .box { max-width: 400px; margin: 20px auto; background: white; padding: 25px; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); text-align: left; }
+        h1, h3 { text-align: center; }
         input, select, button { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ccc; border-radius: 5px; box-sizing: border-box; }
-        button { background: #28a745; color: white; font-weight: bold; border: none; cursor: pointer; }
+        button { font-weight: bold; border: none; cursor: pointer; color: white; }
+        .btn-green { background: #28a745; }
+        .btn-blue { background: #007bff; }
+        .btn-red { background: #dc3545; }
         .hidden { display: none; }
-        #msg, #booking-msg { font-weight: bold; margin-top: 10px; }
+        .nav-tabs { display: flex; justify-content: space-around; margin-bottom: 20px; }
+        .tab { padding: 10px; background: #ddd; border-radius: 5px; cursor: pointer; width: 45%; text-align: center; font-weight: bold; }
+        .active-tab { background: #007bff; color: white; }
+        .booking-card { background: #f8f9fa; border-left: 5px solid #007bff; padding: 15px; margin: 10px 0; border-radius: 5px; position: relative; }
+        .status-badge { font-weight: bold; padding: 3px 8px; border-radius: 3px; font-size: 12px; float: right; }
     </style>
 </head>
 <body>
 
     <h1>🏍️ IndicRide 🚗</h1>
 
-    <!-- STEP 1: लॉगिन स्क्रीन -->
+    <!-- लॉगिन स्क्रीन -->
     <div id="auth-box" class="box">
         <h3>अकाउंट लॉगिन / रजिस्टर</h3>
         <input type="email" id="email" placeholder="ईमेल आईडी डालें" value="test@gmail.com" required>
         <input type="password" id="password" placeholder="पासवर्ड डालें" value="123456" required>
-        <button onclick="handleLogin()">लॉगिन करें (Login)</button>
-        <p id="msg" style="color: green;"></p>
+        <button class="btn-green" onclick="handleLogin()">लॉगिन करें (Login)</button>
+        <p id="msg" style="color: green; text-align:center;"></p>
     </div>
 
-    <!-- STEP 2: बुकिंग स्क्रीन -->
-    <div id="booking-box" class="box hidden">
-        <h3 style="color: #28a745;">👋 राइड बुक करें</h3>
-        <input type="text" id="pickup" placeholder="पिकअप लोकेशन (Pickup)" required>
-        <input type="text" id="destination" placeholder="ड्रॉप लोकेशन (Destination)" required>
+    <!-- मुख्य ऐप (लॉगिन के बाद दिखेगा) -->
+    <div id="main-app" class="hidden">
         
-        <select id="vehicle_type">
-            <option value="bike">🏍️ बाइक (₹8/किमी)</option>
-            <option value="car">🚗 कार (₹15/किमी)</option>
-        </select>
-        <input type="number" id="passenger" placeholder="यात्रियों की संख्या" min="1" max="4" value="1">
-        <input type="date" id="trip_date" required>
-        <button onclick="confirmBooking()">🚀 बुकिंग कन्फर्म करें</button>
-        <p id="booking-msg"></p>
+        <!-- यात्री और राइडर बदलने के लिए टैब बटन -->
+        <div class="nav-tabs">
+            <div id="tab-customer" class="tab active-tab" onclick="switchRole('customer')">यात्री (Customer)</div>
+            <div id="tab-rider" class="tab" onclick="switchRole('rider')">राइडर (Rider/Driver)</div>
+        </div>
+
+        <!-- 1. यात्री बुकिंग स्क्रीन -->
+        <div id="customer-box" class="box">
+            <h3>👋 राइड बुक करें</h3>
+            <input type="text" id="pickup" placeholder="पिकअप लोकेशन (Pickup)" value="Karwi chitrakoot" required>
+            <input type="text" id="destination" placeholder="ड्रॉप लोकेशन (Destination)" value="Red fort" required>
+            
+            <select id="vehicle_type">
+                <option value="bike">🏍️ बाइक (₹8/किमी)</option>
+                <option value="car">🚗 कार (₹15/किमी)</option>
+            </select>
+            <input type="number" id="passenger" placeholder="यात्रियों की संख्या" min="1" max="4" value="1">
+            <input type="date" id="trip_date" value="2026-10-21" required>
+            <button class="btn-green" onclick="confirmBooking()">🚀 बुकिंग कन्फर्म करें</button>
+            <p id="booking-msg" style="text-align:center; font-weight:bold;"></p>
+        </div>
+
+        <!-- 2. राइडर डैशबोर्ड स्क्रीन -->
+        <div id="rider-box" class="box hidden">
+            <h3>🏍️ राइडर डैशबोर्ड</h3>
+            <p style="font-size: 13px; color: #666; text-align: center;">(यहाँ ड्राइवर को लाइव बुकिंग दिखाई देगी)</p>
+            <div id="rider-bookings-list">
+                <!-- लाइव बुकिंग यहाँ रेंडर होंगी -->
+                <p style="text-align:center; color:#999;">अभी कोई बुकिंग उपलब्ध नहीं है।</p>
+            </div>
+        </div>
+
+        <!-- 3. बुकिंग्स का लाइव रिकॉर्ड (दोनों को नीचे दिखेगा) -->
+        <div class="box">
+            <h3>📊 बुकिंग का लाइव रिकॉर्ड</h3>
+            <div id="global-bookings-list">
+                <p style="text-align:center; color:#999;">कोई रिकॉर्ड नहीं है।</p>
+            </div>
+        </div>
+
     </div>
 
     <script>
-        // सीधे लॉगिन कराने का फंक्शन (नो एरर झंझट)
+        // डमी डेटाबेस स्टोरेज (पेज रिफ्रेश होने पर भी डेटा नहीं उड़ेगा)
+        let bookingsData = JSON.parse(localStorage.getItem('indicride_bookings')) || [];
+
         function handleLogin() {
-            const msg = document.getElementById('msg');
-            msg.innerText = "लॉगिन सफल! ऐप खुल रहा है...";
-            
+            document.getElementById('msg').innerText = "लॉगिन सफल! ऐप खुल रहा है...";
             setTimeout(() => {
                 document.getElementById('auth-box').classList.add('hidden');
-                document.getElementById('booking-box').classList.remove('hidden');
+                document.getElementById('main-app').classList.remove('hidden');
+                renderBookings();
             }, 400);
+        }
+
+        // रोल बदलने का फंक्शन (यात्री <-> राइडर)
+        function switchRole(role) {
+            if (role === 'customer') {
+                document.getElementById('tab-customer').classList.add('active-tab');
+                document.getElementById('tab-rider').classList.remove('active-tab');
+                document.getElementById('customer-box').classList.remove('hidden');
+                document.getElementById('rider-box').classList.add('hidden');
+            } else {
+                document.getElementById('tab-customer').classList.remove('active-tab');
+                document.getElementById('tab-rider').classList.add('active-tab');
+                document.getElementById('customer-box').classList.add('hidden');
+                document.getElementById('rider-box').classList.remove('hidden');
+            }
+            renderBookings();
         }
 
         // बुकिंग कन्फर्म करने का फंक्शन
@@ -60,26 +114,89 @@
             const destination = document.getElementById('destination').value;
             const vehicle_type = document.getElementById('vehicle_type').value;
             const trip_date = document.getElementById('trip_date').value;
+            const passenger = document.getElementById('passenger').value;
             const bookingMsg = document.getElementById('booking-msg');
 
             if(!pickup || !destination || !trip_date) {
-                bookingMsg.style.color = "red"; 
-                bookingMsg.innerText = "कृपया पूरी जानकारी भरें!"; 
+                bookingMsg.style.color = "red";
+                bookingMsg.innerText = "कृपया पूरी जानकारी भरें!";
                 return;
             }
 
-            bookingMsg.style.color = "orange"; 
-            bookingMsg.innerText = "बुकिंग सुरक्षित की जा रही है...";
-            
-            // फिक्स किराया कैलकुलेशन
             const mockDistance = 15;
             const calculatedFare = mockDistance * (vehicle_type === 'bike' ? 8 : 15);
 
-            setTimeout(() => {
-                bookingMsg.style.color = "green"; 
-                bookingMsg.innerText = `🎉 IndicRide बुकिंग सफल! अनुमानित किराया: ₹${calculatedFare}`;
-            }, 600);
+            // नया बुकिंग ऑब्जेक्ट बनाना
+            const newBooking = {
+                id: 'BK-' + Math.floor(Math.random() * 9000 + 1000),
+                pickup: pickup,
+                destination: destination,
+                vehicle_type: vehicle_type,
+                passenger: passenger,
+                trip_date: trip_date,
+                fare: calculatedFare,
+                status: 'पेंडिंग (Pending)'
+            };
+
+            bookingsData.push(newBooking);
+            localStorage.setItem('indicride_bookings', JSON.stringify(bookingsData));
+
+            bookingMsg.style.color = "green";
+            bookingMsg.innerText = `🎉 IndicRide बुकिंग सफल! किराया: ₹${calculatedFare}`;
+            
+            renderBookings();
         }
-    </script>
-</body>
-</html>
+
+        // राइडर द्वारा बुकिंग स्वीकार करने का फंक्शन
+        function acceptBooking(id) {
+            bookingsData = bookingsData.map(b => b.id === id ? { ...b, status: 'स्वीकार की गई (Accepted)' } : b);
+            localStorage.setItem('indicride_bookings', JSON.stringify(bookingsData));
+            renderBookings();
+        }
+
+        // राइडर या यात्री द्वारा बुकिंग कैंसिल करने का फंक्शन
+        function cancelBooking(id) {
+            bookingsData = bookingsData.map(b => b.id === id ? { ...b, status: 'कैंसिल (Cancelled)' } : b);
+            localStorage.setItem('indicride_bookings', JSON.stringify(bookingsData));
+            renderBookings();
+        }
+
+        // स्क्रीन पर लाइव डेटा दिखाने का फंक्शन
+        function renderBookings() {
+            const riderList = document.getElementById('rider-bookings-list');
+            const globalList = document.getElementById('global-bookings-list');
+            
+            riderList.innerHTML = '';
+            globalList.innerHTML = '';
+
+            if (bookingsData.length === 0) {
+                riderList.innerHTML = '<p style="text-align:center; color:#999;">अभी कोई बुकिंग उपलब्ध नहीं है।</p>';
+                globalList.innerHTML = '<p style="text-align:center; color:#999;">कोई रिकॉर्ड नहीं है।</p>';
+                return;
+            }
+
+            bookingsData.forEach(b => {
+                // स्टेटस का रंग तय करना
+                let badgeColor = '#ffc107'; // पेंडिंग
+                if (b.status.includes('Accepted')) badgeColor = '#28a745';
+                if (b.status.includes('Cancelled')) badgeColor = '#dc3545';
+
+                // 1. ग्लोबल रिकॉर्ड लिस्ट (यात्री को अपना स्टेटस दिखेगा)
+                const globalCard = `
+                    <div class="booking-card">
+                        <span class="status-badge" style="background:${badgeColor}; color:white;">${b.status}</span>
+                        <strong>ID:</strong> ${b.id}<br>
+                        <strong>Route:</strong> ${b.pickup} -> ${b.destination}<br>
+                        <strong>किराया:</strong> ₹${b.fare} | <strong>वाहन:</strong> ${b.vehicle_type}<br>
+                        ${b.status.includes('Pending') ? `<button class="btn-red" style="padding:5px; margin-top:5px; font-size:12px;" onclick="cancelBooking('${b.id}')">❌ कैंसिल करें</button>` : ''}
+                    </div>
+                `;
+                globalList.innerHTML += globalCard;
+
+                // 2. राइडर लिस्ट (केवल पेंडिंग बुकिंग्स ड्राइवर को उठाने के लिए दिखेंगी)
+                if (b.status.includes('Pending')) {
+                    const riderCard = `
+                        <div class="booking-card" style="border-left-color: #ffc107;">
+                            <strong>ID:</strong> ${b.id}<br>
+                            <strong>पिकअप:</strong> ${b.pickup}<br>
+        
