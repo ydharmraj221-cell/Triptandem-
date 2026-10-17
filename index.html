@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>IndicRide</title>
-    <!-- Leaflet.js (मुफ़्त मैप लाइब्रेरी) की CSS और JS फाइल्स -->
+    <!-- Leaflet.js की मुफ्त मैप CSS और JS फाइल्स -->
     <link rel="stylesheet" href="https://unpkg.com" />
     <script src="https://unpkg.com"></script>
     <style>
@@ -22,8 +22,8 @@
         .active-tab { background: #007bff; color: white; }
         .booking-card { background: #f8f9fa; border-left: 5px solid #007bff; padding: 15px; margin: 10px 0; border-radius: 5px; }
         .status-badge { font-weight: bold; padding: 3px 8px; border-radius: 3px; font-size: 12px; float: right; }
-        /* नक्शे का डिज़ाइन */
-        #map { height: 250px; width: 100%; border-radius: 5px; margin: 10px 0; border: 1px solid #ccc; }
+        /* मोबाइल रेस्पॉन्सिव नक्शा डिज़ाइन */
+        #map { height: 280px; width: 100%; border-radius: 8px; margin: 15px 0; border: 2px solid #007bff; z-index: 1; }
         .info-text { font-size: 14px; font-weight: bold; color: #333; margin: 5px 0; background: #e9ecef; padding: 8px; border-radius: 5px; }
     </style>
 </head>
@@ -50,12 +50,12 @@
         <!-- यात्री बुकिंग फॉर्म -->
         <div id="customer-box" class="box">
             <h3>👋 राइड बुक करें</h3>
-            <input type="text" id="pickup" placeholder="कहाँ से पिकअप करना है? (जैसे: Karwi)" value="Karwi, Chitrakoot" required>
+            <input type="text" id="pickup" placeholder="कहाँ से पिकअप करना है? (जैसे: Karwi)" value="Chitrakoot, Uttar Pradesh" required>
             <input type="text" id="destination" placeholder="कहाँ जाना है? (जैसे: Banda)" value="Banda, Uttar Pradesh" required>
             
             <button class="btn-blue" type="button" onclick="calculateRoute()">🗺️ रूट और किराया चेक करें</button>
 
-            <!-- लाइव मैप -->
+            <!-- लाइव मैप कंटेनर -->
             <div id="map"></div>
             
             <!-- दूरी और समय का लाइव डिस्प्ले -->
@@ -97,30 +97,33 @@
 
     <script>
         let bookingsData = [];
-        let map, routePolyline;
+        let map, routePolyline, startMarker, endMarker;
         let currentDistanceKm = 0;
 
         function directLogin() {
             document.getElementById('auth-box').style.setProperty('display', 'none', 'important');
             document.getElementById('main-app').classList.remove('hidden');
             
-            // लॉगिन होते ही मैप इनिशियलाइज़ करें
+            // चित्रकूट का डिफ़ॉल्ट कोऑर्डिनेट लेकर मैप लोड करना
             setTimeout(() => {
                 if (!map) {
-                    map = L.map('map').setView([25.2078, 80.9166], 9); // चित्रकूट का डिफ़ॉल्ट कोऑर्डिनेट
+                    map = L.map('map').setView([25.2078, 80.9166], 8);
                     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                        maxZoom: 19
+                        maxZoom: 19,
+                        attribution: '© OpenStreetMap'
                     }).addTo(map);
+                } else {
+                    map.invalidateSize();
                 }
-            }, 200);
+            }, 300);
 
             renderBookings();
         }
 
-        // मुफ़्त जियोकोडिंग और ओएसआरएम से लाइव दूरी निकालने का जादुई फंक्शन
+        // 100% सटीक लाइव रूटिंग फंक्शन
         async function calculateRoute() {
-            const pickupName = document.getElementById('pickup').value;
-            const destName = document.getElementById('destination').value;
+            const pickupName = document.getElementById('pickup').value.trim();
+            const destName = document.getElementById('destination').value.trim();
             const bookingMsg = document.getElementById('booking-msg');
 
             if(!pickupName || !destName) {
@@ -129,46 +132,58 @@
             }
 
             bookingMsg.style.color = "orange";
-            bookingMsg.innerText = "रूट और किराया कैलकुलेट किया जा रहा है...";
+            bookingMsg.innerText = "लाइव रूट ट्रैक किया जा रहा है...";
 
             try {
-                // 1. पिकअप जगह के कोऑर्डिनेट्स खोजना
+                // 1. पिकअप स्थान के कोऑर्डिनेट्स खोजना
                 const pRes = await fetch(`https://openstreetmap.org{encodeURIComponent(pickupName)}`);
                 const pData = await pRes.json();
-                // 2. डेस्टिनेशन जगह के कोऑर्डिनेट्स खोजना
+                
+                // 2. ड्रॉप स्थान के कोऑर्डिनेट्स खोजना
                 const dRes = await fetch(`https://openstreetmap.org{encodeURIComponent(destName)}`);
                 const dData = await dRes.json();
 
-                if(pData.length === 0 || dData.length === 0) {
+                if(!pData.length || !dData.length) {
                     bookingMsg.style.color = "red";
-                    bookingMsg.innerText = "दिए गए स्थानों को खोजने में असमर्थ। कृपया नाम सही लिखें!";
+                    bookingMsg.innerText = "जगह का नाम नहीं मिला, कृपया सही नाम लिखें!";
                     return;
                 }
 
-                const start = [pData[0].lat, pData[0].lon];
-                const end = [dData[0].lat, dData[0].lon];
+                const pLat = pData[0].lat; const pLon = pData[0].lon;
+                const dLat = dData[0].lat; const dLon = dData[0].lon;
 
-                // 3. मुफ़्त OSRM API से असली ड्राइविंग दूरी और समय निकालना
-                const routeRes = await fetch(`https://project-osrm.org{start[1]},${start[0]};${end[1]},${end[0]}?overview=full&geometries=geojson`);
+                // 3. OSRM ड्राइविंग रूट API कॉल 
+                const routeUrl = `https://project-osrm.org{pLon},${pLat};${dLon},${dLat}?overview=full&geometries=geojson`;
+                const routeRes = await fetch(routeUrl);
                 const routeData = await routeRes.json();
 
                 if(!routeData.routes || routeData.routes.length === 0) {
                     bookingMsg.style.color = "red";
-                    bookingMsg.innerText = "रास्ता नहीं मिल पाया!";
+                    bookingMsg.innerText = "रास्ता खोजने में असमर्थ!";
                     return;
                 }
 
-                const route = routeData.routes[0];
-                currentDistanceKm = (route.distance / 1000).toFixed(1); // मीटर को किमी में बदला
-                const durationMins = Math.round(route.duration / 60); // सेकंड को मिनट में बदला
+                const activeRoute = routeData.routes[0];
+                currentDistanceKm = (activeRoute.distance / 1000).toFixed(1);
+                const durationMins = Math.round(activeRoute.duration / 60);
 
-                // मैप अपडेट करना और रेखा खींचना
+                // पुराने मार्कर्स और लाइन को साफ़ करना
                 if (routePolyline) map.removeLayer(routePolyline);
-                const coordinates = route.geometry.coordinates.map(coord => [coord[1], coord[0]]);
-                routePolyline = L.polyline(coordinates, {color: 'blue', weight: 5}).addTo(map);
-                map.fitBounds(routePolyline.getBounds());
+                if (startMarker) map.removeLayer(startMarker);
+                if (endMarker) map.removeLayer(endMarker);
 
-                // डेटा रेंडर करना
+                // [Lat, Lon] क्रम को ठीक करके नीली रेखा खींचना
+                const geometryCoords = activeRoute.geometry.coordinates.map(coord => [coord[1], coord[0]]);
+                routePolyline = L.polyline(geometryCoords, {color: 'blue', weight: 6, opacity: 0.8}).addTo(map);
+                
+                // पिकअप और ड्रॉप पॉइंट पर पिन (Markers) लगाना
+                startMarker = L.marker([pLat, pLon]).addTo(map).bindPopup("पिकअप यहाँ है").openPopup();
+                endMarker = L.marker([dLat, dLon]).addTo(map).bindPopup("ड्रॉप यहाँ है");
+
+                // नक्शे को रूट के आकार में ऑटो-ज़ूम करना (एरर फिक्स की गई)
+                map.fitBounds(routePolyline.getBounds(), { padding: [30, 30] });
+
+                // डिस्प्ले अपडेट करना
                 document.getElementById('dist-val').innerText = currentDistanceKm;
                 document.getElementById('time-val').innerText = durationMins;
                 document.getElementById('route-info').classList.remove('hidden');
@@ -178,29 +193,14 @@
 
             } catch (err) {
                 bookingMsg.style.color = "red";
-                bookingMsg.innerText = "नेटवर्क स्लो है, कृपया दोबारा प्रयास करें!";
+                bookingMsg.innerText = "सर्वर बिजी है, कृपया एक बार फिर बटन दबाएं!";
             }
         }
 
-        // वाहन के अनुसार लाइव किराया बदलने का फंक्शन
         function updateFareDisplay() {
             if(currentDistanceKm === 0) return;
             const vehicle = document.getElementById('vehicle_type').value;
             let fare = 0;
 
             if(vehicle === 'bike') {
-                fare = Math.max(40, Math.round(currentDistanceKm * 8));
-            } else {
-                fare = Math.max(100, Math.round(currentDistanceKm * 15));
-            }
-            document.getElementById('fare-val').innerText = fare;
-        }
-
-        // बुकिंग कन्फर्म करने का फंक्शन
-        function confirmBooking() {
-            const pickup = document.getElementById('pickup').value;
-            const destination = document.getElementById('destination').value;
-            const vehicle_type = document.getElementById('vehicle_type').value;
-            const trip_date = document.getElementById('trip_date').value;
-            const passenger = document.getElementById('passenger').value;
-            
+                
