@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ROAMRIDER</title>
+    <!-- Supabase की लाइव लाइब्रेरी -->
     <script src="https://jsdelivr.net"></script>
     <style>
         body { font-family: Arial, sans-serif; background: #f4f4f9; padding: 20px; text-align: center; }
@@ -46,12 +47,13 @@
 
     <script>
         const SUPABASE_URL = "https://supabase.co";
-        // आपकी लाइव प्रोजेक्ट की सही anon key जो मैंने आपके स्क्रीनशॉट से डिकोड की है
-        const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im93dnRoYWhzdGZ4eWVpenh6ZmciLCJyb2xlIjoiYW5vbiIsImlhdCI6MTczMTM1NzM2MCwiZXhwIjoyMDQ2OTMzMzYwfQ.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im93dnRoYWhzdGZ4eWVpenh6ZmciLCJyb2xlIjoiYW5vbiIsImlhdCI6MTczMTM1NzM2MCwiZXhwIjoyMDQ2OTMzMzYwfQ"; 
+        // भाई, आपकी दी हुई 100% सही लाइव anon key मैंने यहाँ फिक्स कर दी है
+        const SUPABASE_KEY = "sb_publishable_6bHigquVR3qm-y9Kpa-j6Q_mzFDWEI1"; 
 
         const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
         let loggedInUserId = null;
 
+        // 1. नया अकाउंट रजिस्टर करने का फंक्शन
         async function handleSignUp() {
             const email = document.getElementById('email').value;
             const password = document.getElementById('password').value;
@@ -66,14 +68,15 @@
                     msg.innerText = "फेल: " + error.message; 
                 } else { 
                     msg.style.color = "green"; 
-                    msg.innerText = "असली रजिस्ट्रेशन सफल! अब लॉगिन बटन दबाएं।"; 
+                    msg.innerText = "रजिस्ट्रेशन सफल! अब सीधे लॉगिन बटन दबाएं।"; 
                 }
             } catch (err) {
                 msg.style.color = "red";
-                msg.innerText = "कनेक्शन फेल!";
+                msg.innerText = "कनेक्शन एरर!";
             }
         }
 
+        // 2. लॉगिन करने का फंक्शन
         async function handleLogin() {
             const email = document.getElementById('email').value;
             const password = document.getElementById('password').value;
@@ -100,6 +103,7 @@
             }
         }
 
+        // 3. बुकिंग डेटा Supabase में सेव करने का फंक्शन
         async function confirmBooking() {
             const pickup = document.getElementById('pickup').value;
             const destination = document.getElementById('destination').value;
